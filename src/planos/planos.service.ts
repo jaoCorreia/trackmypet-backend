@@ -16,7 +16,7 @@ export class PlanosService {
       ...dto,
       created_at: new Date().toISOString(),
     });
-    return await this.planoRepository.save(plano);
+    return await this.planoRepository.create(plano);
   }
 
   async findAll() {
