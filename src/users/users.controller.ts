@@ -19,7 +19,7 @@ export class UsersController {
     const user = await this.service.create(dto);
     const host = process.env.HOST;
     return {
-      data:user,
+      data: user,
       _link: {
         self: { href: `${host}/users/${user.id}`, method: 'GET' },
         list: { href: `${host}/users`, method: 'GET' },
@@ -67,7 +67,7 @@ export class UsersController {
     const user = await this.service.update(Number(id), dto);
     const host = process.env.HOST;
     return {
-        data: user,
+      data: user,
       _link: {
         self: { href: `${host}/users/${user.id}`, method: 'GET' },
         list: { href: `${host}/users`, method: 'GET' },
@@ -83,7 +83,7 @@ export class UsersController {
     const user = await this.service.delete(Number(id));
     const host = process.env.HOST;
     return {
-        data: user,
+      data: user,
       _link: {
         self: { href: `${host}/users/:id`, method: 'GET' },
         list: { href: `${host}/users`, method: 'GET' },
