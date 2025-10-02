@@ -1,12 +1,21 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from 'src/database/entities/user.entity';
+import { User } from 'src/database/entities/user.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { JwtAuthMiddleware } from 'src/common/middleware/jwt-auth.middleware';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity])],
+  imports: [TypeOrmModule.forFeature([User])],
   controllers: [UsersController],
-  providers: [UsersService]
+  providers: [UsersService],
+  exports: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(JwtAuthMiddleware)
+      .exclude({ path: 'users', method: RequestMethod.POST })
+      .forRoutes('users');
+  }
+}
