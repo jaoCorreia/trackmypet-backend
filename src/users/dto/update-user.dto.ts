@@ -1,8 +1,11 @@
-export type UpdateUserDto = {
-  email: string;
-  password_hash: string;
+import { UserRole } from 'src/database/entities/user-role.enum';
+
+export class UpdateUserDto {
+  email?: string;
+  password?: string;
   photo?: string;
-  name: string;
-  birth_date: Date;
-  phone_number: string;
-};
+  name?: string;
+  role?: UserRole;
+  birth_date?: Date;
+  phone_number?: string;
+}
