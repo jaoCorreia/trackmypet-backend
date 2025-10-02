@@ -6,9 +6,14 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './dto';
+import { RolesGuard } from 'src/common/guard/roles.guard';
+import { UserRole } from 'src/database/entities/user-role.enum';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { OwnerOrAdminGuard } from 'src/common/guard/owner-or-admin.guard';
 
 @Controller('users')
 export class UsersController {
@@ -31,6 +36,8 @@ export class UsersController {
   }
 
   @Get()
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
   async findAll() {
     const users = await this.service.findAll();
     const host = process.env.HOST;
@@ -47,6 +54,7 @@ export class UsersController {
   }
 
   @Get(':id')
+  @UseGuards(OwnerOrAdminGuard)
   async findOne(@Param('id') id: string) {
     const user = await this.service.findOne(Number(id));
     const host = process.env.HOST;
@@ -63,6 +71,7 @@ export class UsersController {
   }
 
   @Put(':id')
+  @UseGuards(OwnerOrAdminGuard)
   async update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     const user = await this.service.update(Number(id), dto);
     const host = process.env.HOST;
@@ -79,6 +88,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(OwnerOrAdminGuard)
   async remove(@Param('id') id: string) {
     const user = await this.service.delete(Number(id));
     const host = process.env.HOST;

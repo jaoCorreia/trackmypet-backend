@@ -48,6 +48,6 @@ export class UsersService {
   async delete(id: number) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException('User not found');
-    return await this.userRepository.softDelete(user);
+    return await this.userRepository.softDelete(id);
   }
 }
