@@ -1,16 +1,13 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, OneToMany } from "typeorm";
-import { Breed } from './breed.entity';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn, RelationId } from "typeorm";
+import { Specie } from './specie.entity';
 
-@Entity({name: 'species'})
-export class Specie {
+@Entity({name: 'breeds'})
+export class Breed {
     @PrimaryGeneratedColumn({type: 'bigint'})
     id:number;
 
     @Column({ type: 'varchar', length: 45, unique: true})
     name: string;
-
-    @Column({ type: 'varchar', length: 255, nullable: true })
-    icon?: string;    
 
     @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
     createdAt?: Date;
@@ -21,6 +18,11 @@ export class Specie {
     @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
     deletedAt?: Date;
 
-    @OneToMany(() => Breed, (breed) => breed.specie)
-    breeds?: Breed[];
+    @ManyToOne(() => Specie, (specie) => specie.breeds, { 
+        nullable: false, 
+        onDelete: 'CASCADE' 
+    })
+    
+    @JoinColumn({ name: 'specie_id' })
+    specie: Specie;
 }

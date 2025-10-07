@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { SpeciesModule } from './species/species.module';
+import { BreedsModule } from './breeds/breeds.module';
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { SpeciesModule } from './species/species.module';
     }),
     UsersModule,
     AuthModule,
-    SpeciesModule
+    SpeciesModule,
+    BreedsModule
   ],
   controllers: [AppController],
   providers: [AppService],

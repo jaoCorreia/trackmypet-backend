@@ -4,7 +4,6 @@ import { CreateSpecieDto, UpdateSpecieDto } from "./dto";
 import { RolesGuard } from "src/common/guard/roles.guard";
 import { Roles } from "src/common/decorator/roles.decorator";
 import { UserRole } from "src/database/entities/user-role.enum";
-import { OwnerOrAdminGuard } from "src/common/guard/owner-or-admin.guard";
 
 @Controller('species')
 export class SpeciesController {
