@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import { Breed } from './breed.entity';
 
 @Entity({name: 'species'})
 export class Specie {
@@ -19,4 +20,7 @@ export class Specie {
 
     @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
     deletedAt?: Date;
+
+    @OneToMany(() => Breed, (breed) => breed.specie)
+    breeds?: Breed[];
 }
