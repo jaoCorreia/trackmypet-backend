@@ -5,34 +5,36 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { PetSex } from './pet-sex.enum';
-import { PetAge } from './pet-age.enum';
 import { User } from './user.entity';
-import { Breed } from './breed.entity';
 
-@Entity({ name: 'pets' })
-export class Pet {
+@Entity({ name: 'addresses' })
+export class Address {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column({ type: 'varchar', length: 255 })
-  name: string;
+  @Column({ type: 'varchar', length: 100 })
+  cep: string;
 
-  @Column({ type: 'enum', enum: PetSex})  
-  sex: PetSex;
+  @Column({ type: 'varchar', length: 45 })
+  country: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  photo?: string;
+  @Column({ type: 'varchar', length: 45 })
+  state: string; 
   
-  @Column({ type: 'enum', enum: PetAge})  
-  age: PetAge;
+  @Column({ type: 'varchar', length: 45 })
+  city: string;  
 
-  @Column({ type: 'mediumtext', nullable: true})
-  bio?:string;
+  @Column({ type: 'varchar', length: 45, nullable:true})
+  neighborhood?:string;
+
+  @Column({ type: 'varchar', length: 45 })
+  street: string;  
+
+  @Column({ type: 'varchar', length: 10})
+  number:string;  
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt?: Date;
@@ -49,11 +51,4 @@ export class Pet {
     
   @JoinColumn({ name: 'user_id' })
     user: User;
-
-  @ManyToOne(() => Breed, (breed) => breed.pets, { 
-        nullable: false, 
-    })
-    
-  @JoinColumn({ name: 'breed_id' })
-    breed: Breed;
 }

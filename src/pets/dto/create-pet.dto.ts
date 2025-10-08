@@ -6,7 +6,7 @@ export type CreatePetDto={
   sex: PetSex;
   photo?: string;
   age: PetAge;
-  bio:string;
+  bio?:string;
   userId: number;
   breedId: number;
 }
