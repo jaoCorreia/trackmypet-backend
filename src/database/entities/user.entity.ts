@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { UserRole } from './user-role.enum';
 import { RefreshToken } from './refresh_token.entity';
+import { Pet } from './pet.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -50,4 +51,7 @@ export class User {
 
   @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, {})
   refreshTokens?: RefreshToken[];
+
+  @OneToMany(() => Pet, (pet) => pet.user)
+  pets?: Pet[];
 }

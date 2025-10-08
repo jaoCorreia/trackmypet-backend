@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn, RelationId } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn, RelationId, OneToMany } from "typeorm";
 import { Specie } from './specie.entity';
+import { Pet } from "./pet.entity";
 
 @Entity({name: 'breeds'})
 export class Breed {
@@ -25,4 +26,7 @@ export class Breed {
     
     @JoinColumn({ name: 'specie_id' })
     specie: Specie;
+    
+    @OneToMany(() => Pet, (pet) => pet.breed)
+    pets?: Pet[];
 }

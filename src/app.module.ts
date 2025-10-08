@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { SpeciesModule } from './species/species.module';
 import { BreedsModule } from './breeds/breeds.module';
+import { PetsModule } from './pets/pets.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { BreedsModule } from './breeds/breeds.module';
     UsersModule,
     AuthModule,
     SpeciesModule,
-    BreedsModule
+    BreedsModule,
+    PetsModule
   ],
   controllers: [AppController],
   providers: [AppService],
