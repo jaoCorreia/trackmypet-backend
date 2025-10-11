@@ -49,9 +49,11 @@ export class AddressService {
     return address;
   }
 
-    async update(id: number, dto: UpdateAddressDto) {
+  async update(id: number, dto: UpdateAddressDto) {
     const address = await this.addressRepository.findOne({ where: { id } });
     if (!address) throw new NotFoundException('Address not found');
+
+    const {userId = null, ...rest} = dto;
 
     if (dto.userId) {
       const user = await this.userRepository.findOne({ where: { id: dto.userId } });
@@ -59,6 +61,8 @@ export class AddressService {
       address.user = user;
     }
 
+    Object.assign(address,rest);
+    
     return await this.addressRepository.save(address);
   }
 

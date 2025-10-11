@@ -11,6 +11,7 @@ import { UserRole } from './user-role.enum';
 import { RefreshToken } from './refresh_token.entity';
 import { Pet } from './pet.entity';
 import { Address } from './address.entity';
+import { Activity } from './activity.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -58,4 +59,7 @@ export class User {
 
   @OneToMany(() => Address, (address) => address.user)
   addresses?: Address[];
+
+  @OneToMany(() => Activity, (activity) => activity.user)
+  activities?: Activity[];
 }

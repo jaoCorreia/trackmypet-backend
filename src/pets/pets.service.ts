@@ -61,7 +61,7 @@ export class PetsService {
     const pet = await this.petRepository.findOne({ where: { id } });
     if (!pet) throw new NotFoundException('Pet not found');
 
-    if (dto.name) pet.name = dto.name;
+    const {userId = null, breedId = null, ...rest} = dto;
 
     if (dto.userId) {
       const user = await this.userRepository.findOne({ where: { id: dto.userId } });
@@ -74,6 +74,8 @@ export class PetsService {
       if (!breed) throw new NotFoundException('Breed not found');
       pet.breed = breed;
     }
+
+    Object.assign(pet,rest);
 
     return await this.petRepository.save(pet);
   }

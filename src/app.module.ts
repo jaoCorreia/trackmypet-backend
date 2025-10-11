@@ -9,6 +9,7 @@ import { SpeciesModule } from './species/species.module';
 import { BreedsModule } from './breeds/breeds.module';
 import { PetsModule } from './pets/pets.module';
 import { AddressesModule } from './addresses/addresses.module';
+import { ActivitiesModule } from './activities/activity.module';
 
 @Module({
   imports: [
@@ -36,7 +37,8 @@ import { AddressesModule } from './addresses/addresses.module';
     SpeciesModule,
     BreedsModule,
     PetsModule,
-    AddressesModule
+    AddressesModule,
+    ActivitiesModule
   ],
   controllers: [AppController],
   providers: [AppService],
