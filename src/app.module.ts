@@ -10,6 +10,7 @@ import { BreedsModule } from './breeds/breeds.module';
 import { PetsModule } from './pets/pets.module';
 import { AddressesModule } from './addresses/addresses.module';
 import { ActivitiesModule } from './activities/activity.module';
+import { ActivitySchedulesModule } from './activity-schedules/activity-schedules.module';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { ActivitiesModule } from './activities/activity.module';
     BreedsModule,
     PetsModule,
     AddressesModule,
-    ActivitiesModule
+    ActivitiesModule,
+    ActivitySchedulesModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -57,9 +58,10 @@ export class User {
   @OneToMany(() => Pet, (pet) => pet.user)
   pets?: Pet[];
 
-  @OneToMany(() => Address, (address) => address.user)
+  @OneToMany(() => Address, (address) => address.user, { eager: true })
   addresses?: Address[];
 
   @OneToMany(() => Activity, (activity) => activity.user)
   activities?: Activity[];
+
 }
