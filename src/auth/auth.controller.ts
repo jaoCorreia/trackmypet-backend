@@ -39,6 +39,7 @@ export class AuthController {
   @Get('me')
   @HttpCode(200)
   async self(@CurrentUser() user: JwtPayload) {
-    return await this.authService.getCurrentUser(user.sub);
+    const userData = await this.authService.getCurrentUser(user.sub);
+    return { data: userData };
   }
 }
