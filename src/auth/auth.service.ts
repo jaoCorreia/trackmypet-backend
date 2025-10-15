@@ -134,4 +134,9 @@ export class AuthService {
     }
     return false;
   }
+
+  async getCurrentUser(userId: number) {
+    const user = await this.usersService.findOne(userId);
+    return user;
+  }
 }

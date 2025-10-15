@@ -1,6 +1,13 @@
-import { Controller, Post, Body, HttpCode } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { CurrentUser } from 'src/common/decorator/current-user.decorator';
+
+interface JwtPayload {
+  sub: number;
+  email: string;
+  role: string;
+}
 
 @Controller('auth')
 export class AuthController {
@@ -27,5 +34,11 @@ export class AuthController {
       dto.password,
     );
     return this.authService.login(user);
+  }
+
+  @Get('me')
+  @HttpCode(200)
+  async self(@CurrentUser() user: JwtPayload) {
+    return await this.authService.getCurrentUser(user.sub);
   }
 }
