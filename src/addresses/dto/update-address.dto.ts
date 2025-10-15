@@ -6,5 +6,4 @@ export type UpdateAddressDto ={
   neighborhood?:string;
   street?: string;  
   number?:string;  
-  userId?: number;
 }

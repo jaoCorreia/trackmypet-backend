@@ -53,15 +53,7 @@ export class AddressService {
     const address = await this.addressRepository.findOne({ where: { id } });
     if (!address) throw new NotFoundException('Address not found');
 
-    const {userId = null, ...rest} = dto;
-
-    if (dto.userId) {
-      const user = await this.userRepository.findOne({ where: { id: dto.userId } });
-      if (!user) throw new NotFoundException('User not found');
-      address.user = user;
-    }
-
-    Object.assign(address,rest);
+    Object.assign(address,dto);
     
     return await this.addressRepository.save(address);
   }
