@@ -35,13 +35,21 @@ export class UsersService {
   }
 
   async update(id: number, dto: UpdateUserDto) {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('User not found');
     const { password = null, ...rest } = dto;
+
+    const user = await this.userRepository.preload({
+      id: id,
+      ...rest,
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User #${id} not found`);
+    }
+
     if (password) {
       user.passwordHash = await bcrypt.hash(password, 10);
     }
-    Object.assign(user, rest);
+
     return await this.userRepository.save(user);
   }
 

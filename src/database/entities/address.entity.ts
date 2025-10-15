@@ -22,19 +22,19 @@ export class Address {
   country: string;
 
   @Column({ type: 'varchar', length: 45 })
-  state: string; 
-  
-  @Column({ type: 'varchar', length: 45 })
-  city: string;  
-
-  @Column({ type: 'varchar', length: 45, nullable:true})
-  neighborhood?:string;
+  state: string;
 
   @Column({ type: 'varchar', length: 45 })
-  street: string;  
+  city: string;
 
-  @Column({ type: 'varchar', length: 10})
-  number:string;  
+  @Column({ type: 'varchar', length: 45, nullable: true })
+  neighborhood?: string;
+
+  @Column({ type: 'varchar', length: 45 })
+  street: string;
+
+  @Column({ type: 'varchar', length: 10 })
+  number: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt?: Date;
@@ -45,10 +45,9 @@ export class Address {
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
   deletedAt?: Date;
 
-  @ManyToOne(() => User, (user) => user.pets, { 
-        nullable: false, 
-    })
-    
+  @ManyToOne(() => User, (user) => user.addresses, {
+    nullable: false,
+  })
   @JoinColumn({ name: 'user_id' })
-    user: User;
+  user: User;
 }

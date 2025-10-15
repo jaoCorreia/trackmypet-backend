@@ -6,6 +6,7 @@ export class UpdateUserDto {
   photo?: string;
   name?: string;
   role?: UserRole;
-  birth_date?: Date;
-  phone_number?: string;
+  cpf?: string;
+  birthDate?: Date;
+  phoneNumber?: string;
 }
