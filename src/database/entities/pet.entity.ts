@@ -14,6 +14,7 @@ import { PetAge } from './pet-age.enum';
 import { User } from './user.entity';
 import { Breed } from './breed.entity';
 import { ActivitySchedule } from './activity-schedules';
+import { Incident } from './incident.entity';
 
 @Entity({ name: 'pets' })
 export class Pet {
@@ -60,4 +61,7 @@ export class Pet {
   
   @OneToMany(() => ActivitySchedule, (activitySchedule) => activitySchedule.pet)
     activity_schedules?: ActivitySchedule[];
+
+  @OneToMany(() => Incident, (incident) => incident.pet)
+    incidents?: ActivitySchedule[];
 }

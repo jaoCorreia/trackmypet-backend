@@ -11,6 +11,7 @@ import { PetsModule } from './pets/pets.module';
 import { AddressesModule } from './addresses/addresses.module';
 import { ActivitiesModule } from './activities/activity.module';
 import { ActivitySchedulesModule } from './activity-schedules/activity-schedules.module';
+import { IncidentsModule } from './incidents/incidents.module';
 
 @Module({
   imports: [
@@ -40,7 +41,8 @@ import { ActivitySchedulesModule } from './activity-schedules/activity-schedules
     PetsModule,
     AddressesModule,
     ActivitiesModule,
-    ActivitySchedulesModule
+    ActivitySchedulesModule,
+    IncidentsModule
   ],
   controllers: [AppController],
   providers: [AppService],

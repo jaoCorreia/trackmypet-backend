@@ -30,7 +30,7 @@ export class ActivitySchedule {
             onDelete: "CASCADE"
         })
         
-    @JoinColumn({ name: 'activities_id' })
+    @JoinColumn({ name: 'activity_id' })
         activity: Activity;
 
     @ManyToOne(() => Pet, (pet) => pet.activity_schedules, { 
@@ -38,6 +38,6 @@ export class ActivitySchedule {
         onDelete: "CASCADE"
         })
         
-    @JoinColumn({ name: 'pets_id' })
+    @JoinColumn({ name: 'pet_id' })
         pet: Pet;
 }
