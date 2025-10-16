@@ -1,15 +1,20 @@
-import { Body, Controller, Delete, ExecutionContext, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
-import { CreatePetDto, UpdatePetDto } from "./dto";
-import { PetsService } from "./pets.service";
-import { OwnerOrAdminGuard } from "src/common/guard/owner-or-admin.guard";
-import { RolesGuard } from "src/common/guard/roles.guard";
-import { User } from "src/database/entities/user.entity";
-import { UserRole } from "src/database/entities/user-role.enum";
-import { Roles } from "src/common/decorator/roles.decorator";
-import { PetOwnerOrAdminGuard } from "src/common/guard/pet-owner-or-admin.guard";
-import { Pet } from "src/database/entities/pet.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import {
+  Body,
+  Controller,
+  Delete,
+  ExecutionContext,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { CreatePetDto, UpdatePetDto } from './dto';
+import { PetsService } from './pets.service';
+import { UserRole } from 'src/database/entities/user-role.enum';
+import { PetOwnerOrAdminGuard } from 'src/common/guard/pet-owner-or-admin.guard';
+import { Pet } from 'src/database/entities/pet.entity';
 
 interface AuthenticatedRequest {
   user: {
@@ -24,8 +29,7 @@ interface AuthenticatedRequest {
 
 @Controller('pets')
 export class PetController {
-    constructor(private readonly service: PetsService
-    ){}
+  constructor(private readonly service: PetsService) {}
 
   @Post()
   async create(@Body() dto: CreatePetDto) {
@@ -41,16 +45,15 @@ export class PetController {
         delete: { href: `${host}/pets/${pet.id}`, method: 'DELETE' },
       },
     };
-  }    
+  }
 
   @Get()
-  async findAll(context:ExecutionContext) {
-    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+  async findAll(@Req() request: AuthenticatedRequest) {
     let pets: Pet[] = [];
-        if (request.user.role === UserRole.ADMIN) {
-    pets = await this.service.findAll();
+    if (request.user.role === UserRole.ADMIN) {
+      pets = await this.service.findAll();
     } else {
-        pets = await this.service.findAll(undefined, request.user.sub);
+      pets = await this.service.findAll(undefined, request.user.sub);
     }
 
     const host = process.env.HOST;
@@ -82,7 +85,7 @@ export class PetController {
       },
     };
   }
-  
+
   @Put(':id')
   @UseGuards(PetOwnerOrAdminGuard)
   async update(@Param('id') id: string, @Body() dto: UpdatePetDto) {
@@ -115,5 +118,5 @@ export class PetController {
         delete: { href: `${host}/pets/:id`, method: 'DELETE' },
       },
     };
-  }  
+  }
 }
