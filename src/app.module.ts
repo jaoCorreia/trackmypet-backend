@@ -12,6 +12,7 @@ import { AddressesModule } from './addresses/addresses.module';
 import { ActivitiesModule } from './activities/activity.module';
 import { ActivitySchedulesModule } from './activity-schedules/activity-schedules.module';
 import { IncidentsModule } from './incidents/incidents.module';
+import { ActivityHistoryModule } from './activity-history/activity-history.module';
 
 @Module({
   imports: [
@@ -42,7 +43,8 @@ import { IncidentsModule } from './incidents/incidents.module';
     AddressesModule,
     ActivitiesModule,
     ActivitySchedulesModule,
-    IncidentsModule
+    IncidentsModule,
+    ActivityHistoryModule
   ],
   controllers: [AppController],
   providers: [AppService],

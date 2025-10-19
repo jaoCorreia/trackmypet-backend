@@ -3,16 +3,15 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { JwtAuthMiddleware } from "src/common/middleware/jwt-auth.middleware";
 import { User } from "src/database/entities/user.entity";
 import { UsersModule } from "src/users/users.module";
-import { Address } from "src/database/entities/address.entity";
-import { ActivityController } from "./activity.controller";
-import { ActivityService } from "./activity.service";
+import { ActivitiesController } from "./activity.controller";
+import { ActivitiesService } from "./activity.service";
 import { Activity } from "src/database/entities/activity.entity";
 
 @Module({
     imports: [TypeOrmModule.forFeature([Activity, User]), UsersModule],
-    controllers: [ActivityController],
-    providers: [ActivityService],
-    exports: [ActivityService],
+    controllers: [ActivitiesController],
+    providers: [ActivitiesService],
+    exports: [ActivitiesService],
 })
 export class ActivitiesModule {
     configure(consumer:MiddlewareConsumer){

@@ -4,11 +4,11 @@ import { OwnerOrAdminGuard } from "src/common/guard/owner-or-admin.guard";
 import { RolesGuard } from "src/common/guard/roles.guard";
 import { UserRole } from "src/database/entities/user-role.enum";
 import { Roles } from "src/common/decorator/roles.decorator";
-import { ActivityScheduleService } from "./activity-schedules.service";
+import { ActivitySchedulesService } from "./activity-schedules.service";
 
 @Controller('activity_schedules')
-export class ActivityScheduleController {
-    constructor(private readonly service: ActivityScheduleService){}
+export class ActivitySchedulesController {
+    constructor(private readonly service: ActivitySchedulesService){}
 
   @Post()
 //   @UseGuards(OwnerOrAdminGuard)

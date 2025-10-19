@@ -6,7 +6,7 @@ import { Activity } from 'src/database/entities/activity.entity';
 import { CreateActivityDto, UpdateActivityDto } from './dto';
 
 @Injectable()
-export class ActivityService {
+export class ActivitiesService {
   constructor(
     @InjectRepository(Activity)
     private readonly activityRepository: Repository<Activity>,

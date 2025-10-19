@@ -4,11 +4,11 @@ import { RolesGuard } from "src/common/guard/roles.guard";
 import { UserRole } from "src/database/entities/user-role.enum";
 import { Roles } from "src/common/decorator/roles.decorator";
 import { CreateActivityDto, UpdateActivityDto } from "./dto";
-import { ActivityService } from "./activity.service";
+import { ActivitiesService } from "./activity.service";
 
 @Controller('activities')
-export class ActivityController {
-    constructor(private readonly service: ActivityService){}
+export class ActivitiesController {
+    constructor(private readonly service: ActivitiesService){}
 
   @Post()
 //   @UseGuards(OwnerOrAdminGuard)

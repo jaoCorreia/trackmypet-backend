@@ -4,11 +4,11 @@ import { OwnerOrAdminGuard } from "src/common/guard/owner-or-admin.guard";
 import { RolesGuard } from "src/common/guard/roles.guard";
 import { UserRole } from "src/database/entities/user-role.enum";
 import { Roles } from "src/common/decorator/roles.decorator";
-import { AddressService } from "./addresses.service";
+import { AddressesService } from "./addresses.service";
 
 @Controller('addresses')
-export class AddressController {
-    constructor(private readonly service: AddressService){}
+export class AddressesController {
+    constructor(private readonly service: AddressesService){}
 
   @Post()
 //   @UseGuards(OwnerOrAdminGuard)

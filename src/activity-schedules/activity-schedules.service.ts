@@ -1,14 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from 'src/database/entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Activity } from 'src/database/entities/activity.entity';
 import { CreateScheduleDto, UpdateScheduleDto } from './dto';
-import { ActivitySchedule } from 'src/database/entities/activity-schedules';
+import { ActivitySchedule } from 'src/database/entities/activity-schedules.entity';
 import { Pet } from 'src/database/entities/pet.entity';
 
 @Injectable()
-export class ActivityScheduleService {
+export class ActivitySchedulesService {
   constructor(
     @InjectRepository(ActivitySchedule)
     private readonly activityScheduleRepository: Repository<ActivitySchedule>,

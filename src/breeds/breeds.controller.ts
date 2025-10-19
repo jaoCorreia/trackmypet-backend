@@ -6,7 +6,7 @@ import { UserRole } from "src/database/entities/user-role.enum";
 import { BreedsService } from "./breeds.service";
 
 @Controller('breeds')
-export class BreedController {
+export class BreedsController {
     constructor(private readonly service: BreedsService){}
 
   @Post()

@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany} from "typeorm";
 import { User } from "./user.entity";
-import { ActivitySchedule } from "./activity-schedules";
+import { ActivitySchedule } from "./activity-schedules.entity";
 
 @Entity({name: 'activities'})
 export class Activity {

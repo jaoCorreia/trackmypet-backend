@@ -1,17 +1,17 @@
 import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { JwtAuthMiddleware } from "src/common/middleware/jwt-auth.middleware";
-import { AddressController } from "./addresses.controller";
-import { AddressService } from "./addresses.service";
+import { AddressesController } from "./addresses.controller";
+import { AddressesService } from "./addresses.service";
 import { User } from "src/database/entities/user.entity";
 import { UsersModule } from "src/users/users.module";
 import { Address } from "src/database/entities/address.entity";
 
 @Module({
     imports: [TypeOrmModule.forFeature([Address, User]), UsersModule],
-    controllers: [AddressController],
-    providers: [AddressService],
-    exports: [AddressService],
+    controllers: [AddressesController],
+    providers: [AddressesService],
+    exports: [AddressesService],
 })
 export class AddressesModule {
     configure(consumer:MiddlewareConsumer){

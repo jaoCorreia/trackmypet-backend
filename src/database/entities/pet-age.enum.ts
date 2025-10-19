@@ -1,5 +1,5 @@
 export enum PetAge {
-  FILHOTE = 'filhote',
-  ADULTO = 'adulto',
-  IDOSO = 'idoso'
+  FILHOTE = '1',
+  ADULTO = '2',
+  IDOSO = '3'
 }

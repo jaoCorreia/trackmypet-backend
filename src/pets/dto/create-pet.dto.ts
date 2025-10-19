@@ -8,5 +8,5 @@ export type CreatePetDto={
   age: PetAge;
   bio?:string;
   userId: number;
-  breedId: number;
+  breedId?: number;
 }

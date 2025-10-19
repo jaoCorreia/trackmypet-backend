@@ -13,7 +13,7 @@ import { PetSex } from './pet-sex.enum';
 import { PetAge } from './pet-age.enum';
 import { User } from './user.entity';
 import { Breed } from './breed.entity';
-import { ActivitySchedule } from './activity-schedules';
+import { ActivitySchedule } from './activity-schedules.entity';
 import { Incident } from './incident.entity';
 
 @Entity({ name: 'pets' })
@@ -53,11 +53,11 @@ export class Pet {
     user: User;
 
   @ManyToOne(() => Breed, (breed) => breed.pets, { 
-    nullable: false, 
+    nullable: true, 
     })
     
   @JoinColumn({ name: 'breed_id' })
-    breed: Breed;
+    breed?: Breed;
   
   @OneToMany(() => ActivitySchedule, (activitySchedule) => activitySchedule.pet)
     activity_schedules?: ActivitySchedule[];

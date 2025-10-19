@@ -13,6 +13,7 @@ import { RefreshToken } from './refresh_token.entity';
 import { Pet } from './pet.entity';
 import { Address } from './address.entity';
 import { Activity } from './activity.entity';
+import { UserGender } from './user-gender.enum';
 
 @Entity({ name: 'users' })
 export class User {
@@ -33,6 +34,9 @@ export class User {
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   role: UserRole;
+
+  @Column({ type: 'enum', enum: UserGender })
+  gender: UserGender;
 
   @Column({ type: 'varchar', length: 16, unique: true })
   cpf: string;

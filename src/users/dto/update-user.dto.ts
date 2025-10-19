@@ -1,3 +1,4 @@
+import { UserGender } from 'src/database/entities/user-gender.enum';
 import { UserRole } from 'src/database/entities/user-role.enum';
 
 export class UpdateUserDto {
@@ -9,4 +10,5 @@ export class UpdateUserDto {
   cpf?: string;
   birthDate?: Date;
   phoneNumber?: string;
+  gender?: UserGender;
 }

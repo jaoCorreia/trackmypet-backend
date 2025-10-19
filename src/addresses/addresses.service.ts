@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Address } from 'src/database/entities/address.entity';
 
 @Injectable()
-export class AddressService {
+export class AddressesService {
   constructor(
     @InjectRepository(Address)
     private readonly addressRepository: Repository<Address>,

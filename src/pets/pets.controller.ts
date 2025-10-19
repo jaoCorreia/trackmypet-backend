@@ -1,20 +1,9 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  ExecutionContext,
-  Get,
-  Param,
-  Post,
-  Put,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { CreatePetDto, UpdatePetDto } from './dto';
 import { PetsService } from './pets.service';
-import { UserRole } from 'src/database/entities/user-role.enum';
 import { PetOwnerOrAdminGuard } from 'src/common/guard/pet-owner-or-admin.guard';
 import { Pet } from 'src/database/entities/pet.entity';
+import { UserRole } from 'src/database/entities/user-role.enum';
 
 interface AuthenticatedRequest {
   user: {
@@ -28,7 +17,7 @@ interface AuthenticatedRequest {
 }
 
 @Controller('pets')
-export class PetController {
+export class PetsController {
   constructor(private readonly service: PetsService) {}
 
   @Post()

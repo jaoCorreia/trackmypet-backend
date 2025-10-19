@@ -1,4 +1,5 @@
 export enum PetSex {
-  MALE = 'male',
-  FEMALE = 'female',
+  MACHO = '1',
+  FÊMEA = '2',
+  DESCONHECIDO = '3'
 }

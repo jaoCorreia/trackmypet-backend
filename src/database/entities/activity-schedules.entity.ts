@@ -1,6 +1,7 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn} from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany} from "typeorm";
 import { Activity } from "./activity.entity";
 import { Pet } from "./pet.entity";
+import { ActivityHistory } from "./activity-history.entity";
 
 @Entity({name: 'activity_schedules'})
 export class ActivitySchedule {
@@ -40,4 +41,7 @@ export class ActivitySchedule {
         
     @JoinColumn({ name: 'pet_id' })
         pet: Pet;
+
+    @OneToMany(() => ActivityHistory, (activityHistory) => activityHistory.activitySchedule)
+    activity_history?: ActivityHistory[];    
 }
