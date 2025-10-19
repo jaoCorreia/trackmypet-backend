@@ -3,7 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { JwtAuthMiddleware } from "src/common/middleware/jwt-auth.middleware";
 import { UsersModule } from "src/users/users.module";
 import { Activity } from "src/database/entities/activity.entity";
-import { ActivitySchedule } from "src/database/entities/activity-schedules.entity";
+import { ActivitySchedule } from "src/database/entities/activity-schedule.entity";
 import { Pet } from "src/database/entities/pet.entity";
 import { ActivitySchedulesController } from "./activity-schedules.controller";
 import { ActivitySchedulesService } from "./activity-schedules.service";

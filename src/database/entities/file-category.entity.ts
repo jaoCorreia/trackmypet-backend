@@ -1,13 +1,13 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn} from "typeorm";
-import { ActivitySchedule } from "./activity-schedule.entity";
+import { User } from "./user.entity";
 
-@Entity({name: 'activity_history'})
-export class ActivityHistory {
+@Entity({name: 'file_categories'})
+export class FileCategory {
     @PrimaryGeneratedColumn({type: 'bigint'})
     id:number;
 
-    @Column({ type: 'tinyint', width:1, default:0})
-    status: boolean;
+    @Column({ type: 'varchar', length: 45})
+    name: string;
 
     @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
     createdAt?: Date;
@@ -18,11 +18,11 @@ export class ActivityHistory {
     @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
     deletedAt?: Date;
 
-    @ManyToOne(() => ActivitySchedule, (activitySchedule) => activitySchedule.activity_history, { 
+    @ManyToOne(() => User, (user) => user.file_categories, { 
             nullable: false, 
             onDelete: "CASCADE"
         })
         
-    @JoinColumn({ name: 'activity_schedule_id' })
-        activitySchedule: ActivitySchedule;
+    @JoinColumn({ name: 'user_id' })
+        user: User;
 }

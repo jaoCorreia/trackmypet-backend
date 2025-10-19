@@ -13,7 +13,7 @@ import { PetSex } from './pet-sex.enum';
 import { PetAge } from './pet-age.enum';
 import { User } from './user.entity';
 import { Breed } from './breed.entity';
-import { ActivitySchedule } from './activity-schedules.entity';
+import { ActivitySchedule } from './activity-schedule.entity';
 import { Incident } from './incident.entity';
 
 @Entity({ name: 'pets' })

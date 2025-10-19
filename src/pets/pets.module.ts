@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
+import { MiddlewareConsumer, Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { JwtAuthMiddleware } from "src/common/middleware/jwt-auth.middleware";
 import { Breed } from "src/database/entities/breed.entity";

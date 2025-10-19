@@ -13,6 +13,7 @@ import { ActivitiesModule } from './activities/activity.module';
 import { ActivitySchedulesModule } from './activity-schedules/activity-schedules.module';
 import { IncidentsModule } from './incidents/incidents.module';
 import { ActivityHistoryModule } from './activity-history/activity-history.module';
+import { FileCategoriesModule } from './file-categories/file-categories.module';
 
 @Module({
   imports: [
@@ -44,7 +45,8 @@ import { ActivityHistoryModule } from './activity-history/activity-history.modul
     ActivitiesModule,
     ActivitySchedulesModule,
     IncidentsModule,
-    ActivityHistoryModule
+    ActivityHistoryModule,
+    FileCategoriesModule
   ],
   controllers: [AppController],
   providers: [AppService],

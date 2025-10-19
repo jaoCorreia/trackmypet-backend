@@ -1,10 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/database/entities/user.entity';
 import { Repository } from 'typeorm';
 import { ActivityHistory } from 'src/database/entities/activity-history.entity';
-import { ActivitySchedule } from 'src/database/entities/activity-schedules.entity';
+import { ActivitySchedule } from 'src/database/entities/activity-schedule.entity';
 import { CreateActivityHistoryDto, UpdateActivityHistoryDto } from './dto';
 
 @Injectable()

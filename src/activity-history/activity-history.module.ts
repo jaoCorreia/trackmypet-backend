@@ -1,7 +1,7 @@
-import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
+import { MiddlewareConsumer, Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { JwtAuthMiddleware } from "src/common/middleware/jwt-auth.middleware";
-import { ActivitySchedule } from "src/database/entities/activity-schedules.entity";
+import { ActivitySchedule } from "src/database/entities/activity-schedule.entity";
 import { ActivityHistory } from "src/database/entities/activity-history.entity";
 import { ActivityHistoryService } from "./activity-history.service";
 import { ActivityHistoryController } from "./activity-history.controller";

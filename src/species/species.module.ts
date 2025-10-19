@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
+import { MiddlewareConsumer, Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Specie } from "src/database/entities/specie.entity";
 import { SpeciesController } from "./species.controller";

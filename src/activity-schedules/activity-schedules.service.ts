@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Activity } from 'src/database/entities/activity.entity';
 import { CreateScheduleDto, UpdateScheduleDto } from './dto';
-import { ActivitySchedule } from 'src/database/entities/activity-schedules.entity';
+import { ActivitySchedule } from 'src/database/entities/activity-schedule.entity';
 import { Pet } from 'src/database/entities/pet.entity';
 
 @Injectable()
