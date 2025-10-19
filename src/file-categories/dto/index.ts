@@ -1,2 +1,2 @@
-export * from './create-file-categories.dto';
-export * from './update-file-categories.dto';
+export * from './create-file-category.dto';
+export * from './update-file-category.dto';

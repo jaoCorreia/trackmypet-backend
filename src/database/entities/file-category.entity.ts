@@ -27,10 +27,11 @@ export class FileCategory {
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
   deletedAt?: Date;
 
-  @ManyToOne(() => User, (user) => user.file_categories, {
-    nullable: false,
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+    @ManyToOne(() => User, (user) => user.file_categories, { 
+            nullable: false, 
+            onDelete: "CASCADE"
+        })
+        
+    @JoinColumn({ name: 'user_id' })
+        user: User;
 }

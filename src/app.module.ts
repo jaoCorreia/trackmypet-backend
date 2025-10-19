@@ -14,6 +14,7 @@ import { ActivitySchedulesModule } from './activity-schedules/activity-schedules
 import { IncidentsModule } from './incidents/incidents.module';
 import { ActivityHistoryModule } from './activity-history/activity-history.module';
 import { FileCategoriesModule } from './file-categories/file-categories.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { FileCategoriesModule } from './file-categories/file-categories.module';
     IncidentsModule,
     ActivityHistoryModule,
     FileCategoriesModule,
+    FilesModule
   ],
   controllers: [AppController],
   providers: [AppService],
