@@ -1,17 +1,26 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
-import { OwnerOrAdminGuard } from "src/common/guard/owner-or-admin.guard";
-import { RolesGuard } from "src/common/guard/roles.guard";
-import { UserRole } from "src/database/entities/user-role.enum";
-import { Roles } from "src/common/decorator/roles.decorator";
-import { FilesService } from "./files.service";
-import { CreateFileDto, UpdateFileDto } from "./dto";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
+import { OwnerOrAdminGuard } from 'src/common/guard/owner-or-admin.guard';
+import { RolesGuard } from 'src/common/guard/roles.guard';
+import { UserRole } from 'src/database/entities/user-role.enum';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { FilesService } from './files.service';
+import { CreateFileDto, UpdateFileDto } from './dto';
 
 @Controller('files')
 export class FilesController {
-    constructor(private readonly service: FilesService){}
+  constructor(private readonly service: FilesService) {}
 
   @Post()
-//   @UseGuards(OwnerOrAdminGuard)
+  //   @UseGuards(OwnerOrAdminGuard)
   async create(@Body() dto: CreateFileDto) {
     const file = await this.service.create(dto);
     const host = process.env.HOST;
@@ -25,7 +34,7 @@ export class FilesController {
         delete: { href: `${host}/files/${file.id}`, method: 'DELETE' },
       },
     };
-  }    
+  }
 
   @Get()
   @UseGuards(RolesGuard)
@@ -46,7 +55,7 @@ export class FilesController {
   }
 
   @Get(':id')
-//   @UseGuards(OwnerOrAdminGuard)
+  //   @UseGuards(OwnerOrAdminGuard)
   async findOne(@Param('id') id: string) {
     const file = await this.service.findOne(Number(id));
     const host = process.env.HOST;
@@ -61,9 +70,9 @@ export class FilesController {
       },
     };
   }
-  
+
   @Put(':id')
-//   @UseGuards(OwnerOrAdminGuard)
+  //   @UseGuards(OwnerOrAdminGuard)
   async update(@Param('id') id: string, @Body() dto: UpdateFileDto) {
     const file = await this.service.update(Number(id), dto);
     const host = process.env.HOST;
@@ -80,7 +89,7 @@ export class FilesController {
   }
 
   @Delete(':id')
-//   @UseGuards(OwnerOrAdminGuard)
+  //   @UseGuards(OwnerOrAdminGuard)
   async remove(@Param('id') id: string) {
     const file = await this.service.delete(Number(id));
     const host = process.env.HOST;
@@ -94,5 +103,5 @@ export class FilesController {
         delete: { href: `${host}/files/:id`, method: 'DELETE' },
       },
     };
-  }  
+  }
 }

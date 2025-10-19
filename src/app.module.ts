@@ -48,7 +48,7 @@ import { FilesModule } from './files/files.module';
     IncidentsModule,
     ActivityHistoryModule,
     FileCategoriesModule,
-    FilesModule
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

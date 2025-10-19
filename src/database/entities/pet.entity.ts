@@ -62,8 +62,8 @@ export class Pet {
   activity_schedules?: ActivitySchedule[];
 
   @OneToMany(() => Incident, (incident) => incident.pet)
-    incidents?: Incident[];
+  incidents?: Incident[];
 
   @OneToMany(() => File, (file) => file.pet)
-    files?: File[];
+  files?: File[];
 }
