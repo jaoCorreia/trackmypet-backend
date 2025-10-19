@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn} from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany} from "typeorm";
 import { User } from "./user.entity";
+import { File } from "./file.entity";
 
 @Entity({name: 'file_categories'})
 export class FileCategory {
@@ -25,4 +26,7 @@ export class FileCategory {
         
     @JoinColumn({ name: 'user_id' })
         user: User;
+
+    @OneToMany(() => File, (file) => file.fileCategory)
+    files?: File[];
 }
