@@ -31,8 +31,8 @@ export class FilesService {
     const file = this.fileRepository.create({
       fileUrl: dto.fileUrl,
       name: dto.name,
-      pet: pet,
-      fileCategory: fileCategory,
+      fileCategory,
+      pet
     });
 
     return await this.fileRepository.save(file);
@@ -45,7 +45,7 @@ export class FilesService {
 
     return await this.fileRepository.find({
       where,
-      relations: ['pet', 'file_category'],
+      relations: ['pet', 'fileCategory'],
     });
   }
 
