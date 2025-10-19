@@ -33,7 +33,7 @@ export class Address {
   @Column({ type: 'varchar', length: 45 })
   street: string;
 
-  @Column({ type: 'varchar', length: 10, nullable:true })
+  @Column({ type: 'varchar', length: 10, nullable: true })
   number?: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })

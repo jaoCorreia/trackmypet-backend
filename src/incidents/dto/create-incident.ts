@@ -1,5 +1,5 @@
 export type CreateIncidentDto = {
   phoneNumber: string;
-  description:string;
+  description: string;
   petId: number;
-}
+};

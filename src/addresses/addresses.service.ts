@@ -16,20 +16,22 @@ export class AddressesService {
   ) {}
 
   async create(dto: CreateAddressDto) {
-    const user = await this.userRepository.findOne({ where: { id: dto.userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: dto.userId },
+    });
     if (!user) throw new NotFoundException('User not found');
 
     const address = this.addressRepository.create({
-    cep: dto.cep,
-    country: dto.country,
-    state: dto.state,
-    city: dto.city,
-    neighborhood:dto.neighborhood,
-    street: dto.street,
-    number:dto.number,  
-    user
+      cep: dto.cep,
+      country: dto.country,
+      state: dto.state,
+      city: dto.city,
+      neighborhood: dto.neighborhood,
+      street: dto.street,
+      number: dto.number,
+      user,
     });
-    
+
     return await this.addressRepository.save(address);
   }
 
@@ -53,16 +55,18 @@ export class AddressesService {
     const address = await this.addressRepository.findOne({ where: { id } });
     if (!address) throw new NotFoundException('Address not found');
 
-    const {userId = null, ...rest} = dto;
+    const { userId = null, ...rest } = dto;
 
     if (dto.userId) {
-      const user = await this.userRepository.findOne({ where: { id: dto.userId } });
+      const user = await this.userRepository.findOne({
+        where: { id: dto.userId },
+      });
       if (!user) throw new NotFoundException('User not found');
       address.user = user;
     }
 
-    Object.assign(address,rest);
-    
+    Object.assign(address, rest);
+
     return await this.addressRepository.save(address);
   }
 

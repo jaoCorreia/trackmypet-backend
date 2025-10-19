@@ -1,17 +1,26 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
-import { OwnerOrAdminGuard } from "src/common/guard/owner-or-admin.guard";
-import { RolesGuard } from "src/common/guard/roles.guard";
-import { UserRole } from "src/database/entities/user-role.enum";
-import { Roles } from "src/common/decorator/roles.decorator";
-import { CreateActivityDto, UpdateActivityDto } from "./dto";
-import { ActivitiesService } from "./activity.service";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
+import { OwnerOrAdminGuard } from 'src/common/guard/owner-or-admin.guard';
+import { RolesGuard } from 'src/common/guard/roles.guard';
+import { UserRole } from 'src/database/entities/user-role.enum';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { CreateActivityDto, UpdateActivityDto } from './dto';
+import { ActivitiesService } from './activity.service';
 
 @Controller('activities')
 export class ActivitiesController {
-    constructor(private readonly service: ActivitiesService){}
+  constructor(private readonly service: ActivitiesService) {}
 
   @Post()
-//   @UseGuards(OwnerOrAdminGuard)
+  //   @UseGuards(OwnerOrAdminGuard)
   async create(@Body() dto: CreateActivityDto) {
     const activity = await this.service.create(dto);
     const host = process.env.HOST;
@@ -25,7 +34,7 @@ export class ActivitiesController {
         delete: { href: `${host}/activities/${activity.id}`, method: 'DELETE' },
       },
     };
-  }    
+  }
 
   @Get()
   @UseGuards(RolesGuard)
@@ -46,7 +55,7 @@ export class ActivitiesController {
   }
 
   @Get(':id')
-//   @UseGuards(OwnerOrAdminGuard)
+  //   @UseGuards(OwnerOrAdminGuard)
   async findOne(@Param('id') id: string) {
     const activity = await this.service.findOne(Number(id));
     const host = process.env.HOST;
@@ -61,9 +70,9 @@ export class ActivitiesController {
       },
     };
   }
-  
+
   @Put(':id')
-//   @UseGuards(OwnerOrAdminGuard)
+  //   @UseGuards(OwnerOrAdminGuard)
   async update(@Param('id') id: string, @Body() dto: UpdateActivityDto) {
     const activity = await this.service.update(Number(id), dto);
     const host = process.env.HOST;
@@ -80,7 +89,7 @@ export class ActivitiesController {
   }
 
   @Delete(':id')
-//   @UseGuards(OwnerOrAdminGuard)
+  //   @UseGuards(OwnerOrAdminGuard)
   async remove(@Param('id') id: string) {
     const activity = await this.service.delete(Number(id));
     const host = process.env.HOST;
@@ -94,5 +103,5 @@ export class ActivitiesController {
         delete: { href: `${host}/activities/:id`, method: 'DELETE' },
       },
     };
-  }  
+  }
 }

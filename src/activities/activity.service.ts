@@ -16,15 +16,17 @@ export class ActivitiesService {
   ) {}
 
   async create(dto: CreateActivityDto) {
-    const user = await this.userRepository.findOne({ where: { id: dto.userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: dto.userId },
+    });
     if (!user) throw new NotFoundException('User not found');
 
     const activity = this.activityRepository.create({
-    name: dto.name,
-    icon: dto.icon,
-    user
+      name: dto.name,
+      icon: dto.icon,
+      user,
     });
-    
+
     return await this.activityRepository.save(activity);
   }
 
@@ -44,22 +46,24 @@ export class ActivitiesService {
     return activity;
   }
 
-    async update(id: number, dto: UpdateActivityDto) {
-        const activity = await this.activityRepository.findOne({ where: { id } });
-        if (!activity) throw new NotFoundException('Activity not found');
-        
-        const {userId = null, ...rest} = dto;
+  async update(id: number, dto: UpdateActivityDto) {
+    const activity = await this.activityRepository.findOne({ where: { id } });
+    if (!activity) throw new NotFoundException('Activity not found');
 
-        if (userId) {
-            const user = await this.userRepository.findOne({ where: { id: dto.userId } });
-            if (!user) throw new NotFoundException('User not found');
-            activity.user = user;
-        }
+    const { userId = null, ...rest } = dto;
 
-        Object.assign(activity, rest);
-
-        return await this.activityRepository.save(activity);
+    if (userId) {
+      const user = await this.userRepository.findOne({
+        where: { id: dto.userId },
+      });
+      if (!user) throw new NotFoundException('User not found');
+      activity.user = user;
     }
+
+    Object.assign(activity, rest);
+
+    return await this.activityRepository.save(activity);
+  }
 
   async delete(id: number) {
     const activity = await this.activityRepository.findOne({ where: { id } });

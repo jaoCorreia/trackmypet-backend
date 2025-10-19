@@ -12,7 +12,7 @@ export class IncidentsService {
     private readonly petRepository: Repository<Pet>,
 
     @InjectRepository(Incident)
-    private readonly incidentRepository: Repository<Incident>
+    private readonly incidentRepository: Repository<Incident>,
   ) {}
 
   async create(dto: CreateIncidentDto) {
@@ -22,13 +22,13 @@ export class IncidentsService {
     const incident = this.incidentRepository.create({
       phoneNumber: dto.phoneNumber,
       description: dto.description,
-      pet
+      pet,
     });
-    
+
     return await this.incidentRepository.save(incident);
   }
 
-  async findAll(petId?:number) {
+  async findAll(petId?: number) {
     const where: any = {};
     if (petId) where.user = { id: petId };
 

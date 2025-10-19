@@ -16,11 +16,11 @@ export class Incident {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column({ type: 'varchar', name:'phone_number', length: 15 })
+  @Column({ type: 'varchar', name: 'phone_number', length: 15 })
   phoneNumber: string;
 
-  @Column({ type: 'varchar', length: 255})  
-  description:string;
+  @Column({ type: 'varchar', length: 255 })
+  description: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt?: Date;
@@ -28,10 +28,9 @@ export class Incident {
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
   deletedAt?: Date;
 
-  @ManyToOne(() => Pet, (pet) => pet.incidents, { 
-    nullable: false, 
-    })
-    
+  @ManyToOne(() => Pet, (pet) => pet.incidents, {
+    nullable: false,
+  })
   @JoinColumn({ name: 'pet_id' })
-    pet: Pet;
+  pet: Pet;
 }

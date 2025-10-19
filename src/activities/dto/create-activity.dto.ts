@@ -1,5 +1,5 @@
-export type CreateActivityDto= {
-    name: string;
-    icon: string;
-    userId: number;
-}
+export type CreateActivityDto = {
+  name: string;
+  icon: string;
+  userId: number;
+};

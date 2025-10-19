@@ -1,12 +1,12 @@
-import { PetAge } from "src/database/entities/pet-age.enum";
-import { PetSex } from "src/database/entities/pet-sex.enum";
+import { PetAge } from 'src/database/entities/pet-age.enum';
+import { PetSex } from 'src/database/entities/pet-sex.enum';
 
-export type UpdatePetDto={
-  name?: string; 
+export type UpdatePetDto = {
+  name?: string;
   sex?: PetSex;
   photo?: string;
   age?: PetAge;
-  bio?:string;
+  bio?: string;
   userId?: number;
   breedId?: number;
-}
+};

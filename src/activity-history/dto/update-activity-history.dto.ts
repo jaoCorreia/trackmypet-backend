@@ -1,4 +1,4 @@
 export type UpdateActivityHistoryDto = {
-    status?: boolean;
-    activityScheduleId?: number;
-}
+  status?: boolean;
+  activityScheduleId?: number;
+};

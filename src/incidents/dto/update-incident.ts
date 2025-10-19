@@ -1,5 +1,5 @@
 export type UpdateIncidentDto = {
   phoneNumber?: string;
-  description?:string;
+  description?: string;
   petId?: number;
-}
+};

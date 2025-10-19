@@ -46,7 +46,7 @@ import { FileCategoriesModule } from './file-categories/file-categories.module';
     ActivitySchedulesModule,
     IncidentsModule,
     ActivityHistoryModule,
-    FileCategoriesModule
+    FileCategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

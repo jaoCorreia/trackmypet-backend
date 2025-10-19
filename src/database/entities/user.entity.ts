@@ -71,5 +71,4 @@ export class User {
 
   @OneToMany(() => FileCategory, (file_category) => file_category.user)
   file_categories?: FileCategory[];
-
 }

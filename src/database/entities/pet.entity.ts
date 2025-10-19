@@ -24,17 +24,17 @@ export class Pet {
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
-  @Column({ type: 'enum', enum: PetSex})  
+  @Column({ type: 'enum', enum: PetSex })
   sex: PetSex;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   photo?: string;
-  
-  @Column({ type: 'enum', enum: PetAge})  
+
+  @Column({ type: 'enum', enum: PetAge })
   age: PetAge;
 
-  @Column({ type: 'mediumtext', nullable: true})
-  bio?:string;
+  @Column({ type: 'mediumtext', nullable: true })
+  bio?: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt?: Date;
@@ -45,23 +45,21 @@ export class Pet {
   @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
   deletedAt?: Date;
 
-  @ManyToOne(() => User, (user) => user.pets, { 
-    nullable: false, 
-    })
-    
+  @ManyToOne(() => User, (user) => user.pets, {
+    nullable: false,
+  })
   @JoinColumn({ name: 'user_id' })
-    user: User;
+  user: User;
 
-  @ManyToOne(() => Breed, (breed) => breed.pets, { 
-    nullable: true, 
-    })
-    
+  @ManyToOne(() => Breed, (breed) => breed.pets, {
+    nullable: true,
+  })
   @JoinColumn({ name: 'breed_id' })
-    breed?: Breed;
-  
+  breed?: Breed;
+
   @OneToMany(() => ActivitySchedule, (activitySchedule) => activitySchedule.pet)
-    activity_schedules?: ActivitySchedule[];
+  activity_schedules?: ActivitySchedule[];
 
   @OneToMany(() => Incident, (incident) => incident.pet)
-    incidents?: ActivitySchedule[];
+  incidents?: ActivitySchedule[];
 }

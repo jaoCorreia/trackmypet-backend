@@ -1,4 +1,4 @@
-export type UpdateSpecieDto={
-        name?: string;
-        icon?: string;    
-}
+export type UpdateSpecieDto = {
+  name?: string;
+  icon?: string;
+};

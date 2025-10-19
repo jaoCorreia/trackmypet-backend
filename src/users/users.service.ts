@@ -58,4 +58,12 @@ export class UsersService {
     if (!user) throw new NotFoundException('User not found');
     return await this.userRepository.softDelete(id);
   }
+
+  async updatePhoto(id: number, photoUrl: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+
+    user.photo = photoUrl;
+    return await this.userRepository.save(user);
+  }
 }

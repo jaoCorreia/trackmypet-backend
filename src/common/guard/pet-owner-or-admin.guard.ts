@@ -22,12 +22,11 @@ interface AuthenticatedRequest {
 }
 
 @Injectable()
-
 export class PetOwnerOrAdminGuard implements CanActivate {
-  constructor (
+  constructor(
     @InjectRepository(Pet)
-    private readonly petRepository: Repository<Pet>
-    ){}
+    private readonly petRepository: Repository<Pet>,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
@@ -52,8 +51,8 @@ export class PetOwnerOrAdminGuard implements CanActivate {
       return true;
     }
 
-    const pet = await this.petRepository.findOne({where: {id:petId}});
-    if(!pet) {
+    const pet = await this.petRepository.findOne({ where: { id: petId } });
+    if (!pet) {
       throw new ForbiddenException('Pet not found');
     }
 

@@ -11,18 +11,21 @@ export class ActivityHistoryService {
     @InjectRepository(ActivityHistory)
     private readonly activityHistoryRepository: Repository<ActivityHistory>,
     @InjectRepository(ActivitySchedule)
-    private readonly activityScheduleRepository: Repository<ActivitySchedule>
+    private readonly activityScheduleRepository: Repository<ActivitySchedule>,
   ) {}
 
   async create(dto: CreateActivityHistoryDto) {
-    const activitySchedule = await this.activityScheduleRepository.findOne({ where: { id: dto.activityScheduleId } });
-    if (!activitySchedule) throw new NotFoundException('Activity Schedule not found');
+    const activitySchedule = await this.activityScheduleRepository.findOne({
+      where: { id: dto.activityScheduleId },
+    });
+    if (!activitySchedule)
+      throw new NotFoundException('Activity Schedule not found');
 
     const activityHistory = this.activityHistoryRepository.create({
-    status: dto.status,
-    activitySchedule
+      status: dto.status,
+      activitySchedule,
     });
-    
+
     return await this.activityHistoryRepository.save(activityHistory);
   }
 
@@ -37,31 +40,43 @@ export class ActivityHistoryService {
   }
 
   async findOne(id: number) {
-    const activityHistory = await this.activityHistoryRepository.findOne({ where: { id } });
-    if (!activityHistory) throw new NotFoundException('Activity History not found');
+    const activityHistory = await this.activityHistoryRepository.findOne({
+      where: { id },
+    });
+    if (!activityHistory)
+      throw new NotFoundException('Activity History not found');
     return activityHistory;
   }
 
   async update(id: number, dto: UpdateActivityHistoryDto = {}) {
-    const activityHistory = await this.activityHistoryRepository.findOne({ where: { id } });
-        if (!activityHistory) throw new NotFoundException('Activity History not found');
-        
+    const activityHistory = await this.activityHistoryRepository.findOne({
+      where: { id },
+    });
+    if (!activityHistory)
+      throw new NotFoundException('Activity History not found');
+
     const { activityScheduleId = null, ...rest } = dto;
 
     if (activityScheduleId) {
-      const activitySchedule = await this.activityScheduleRepository.findOne({ where: { id: activityScheduleId } });
-      if (!activitySchedule) throw new NotFoundException('Activity Schedule not found');
+      const activitySchedule = await this.activityScheduleRepository.findOne({
+        where: { id: activityScheduleId },
+      });
+      if (!activitySchedule)
+        throw new NotFoundException('Activity Schedule not found');
       activityHistory.activitySchedule = activitySchedule;
-        }
-
-        Object.assign(activityHistory, rest);
-
-        return await this.activityHistoryRepository.save(activityHistory);
     }
 
+    Object.assign(activityHistory, rest);
+
+    return await this.activityHistoryRepository.save(activityHistory);
+  }
+
   async delete(id: number) {
-    const activityHistory = await this.activityHistoryRepository.findOne({ where: { id } });
-    if (!activityHistory) throw new NotFoundException('Activity History not found');
+    const activityHistory = await this.activityHistoryRepository.findOne({
+      where: { id },
+    });
+    if (!activityHistory)
+      throw new NotFoundException('Activity History not found');
     return await this.activityHistoryRepository.softDelete(id);
   }
 }

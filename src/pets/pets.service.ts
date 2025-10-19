@@ -20,10 +20,14 @@ export class PetsService {
   ) {}
 
   async create(dto: CreatePetDto) {
-    const user = await this.userRepository.findOne({ where: { id: dto.userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: dto.userId },
+    });
     if (!user) throw new NotFoundException('User not found');
 
-    const breed = await this.breedRepository.findOne({ where: { id: dto.breedId } });
+    const breed = await this.breedRepository.findOne({
+      where: { id: dto.breedId },
+    });
     if (!breed) throw new NotFoundException('Breed not found');
 
     const pet = this.petRepository.create({
@@ -33,9 +37,9 @@ export class PetsService {
       age: dto.age,
       bio: dto.bio,
       user,
-      breed, 
+      breed,
     });
-    
+
     return await this.petRepository.save(pet);
   }
 
@@ -61,21 +65,25 @@ export class PetsService {
     const pet = await this.petRepository.findOne({ where: { id } });
     if (!pet) throw new NotFoundException('Pet not found');
 
-    const {userId = null, breedId = null, ...rest} = dto;
+    const { userId, breedId, ...rest } = dto;
 
-    if (dto.userId) {
-      const user = await this.userRepository.findOne({ where: { id: dto.userId } });
+    if (userId) {
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+      });
       if (!user) throw new NotFoundException('User not found');
       pet.user = user;
     }
 
-    if (dto.breedId) {
-      const breed = await this.breedRepository.findOne({ where: { id: dto.breedId } });
+    if (breedId) {
+      const breed = await this.breedRepository.findOne({
+        where: { id: breedId },
+      });
       if (!breed) throw new NotFoundException('Breed not found');
       pet.breed = breed;
     }
 
-    Object.assign(pet,rest);
+    Object.assign(pet, rest);
 
     return await this.petRepository.save(pet);
   }
@@ -84,5 +92,13 @@ export class PetsService {
     const pet = await this.petRepository.findOne({ where: { id } });
     if (!pet) throw new NotFoundException('Pet not found');
     return await this.petRepository.softDelete(id);
+  }
+
+  async updatePhoto(id: number, photoUrl: string) {
+    const pet = await this.petRepository.findOne({ where: { id } });
+    if (!pet) throw new NotFoundException('Pet not found');
+
+    pet.photo = photoUrl;
+    return await this.petRepository.save(pet);
   }
 }

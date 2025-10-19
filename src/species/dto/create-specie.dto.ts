@@ -1,4 +1,4 @@
-export type CreateSpecieDto={
-        name: string;
-        icon?: string;    
-}
+export type CreateSpecieDto = {
+  name: string;
+  icon?: string;
+};

@@ -1,9 +1,23 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CreatePetDto, UpdatePetDto } from './dto';
 import { PetsService } from './pets.service';
 import { PetOwnerOrAdminGuard } from 'src/common/guard/pet-owner-or-admin.guard';
 import { Pet } from 'src/database/entities/pet.entity';
 import { UserRole } from 'src/database/entities/user-role.enum';
+import { UploadService } from 'src/upload/upload.service';
 
 interface AuthenticatedRequest {
   user: {
@@ -18,7 +32,10 @@ interface AuthenticatedRequest {
 
 @Controller('pets')
 export class PetsController {
-  constructor(private readonly service: PetsService) {}
+  constructor(
+    private readonly service: PetsService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   @Post()
   async create(@Body() dto: CreatePetDto) {
@@ -105,6 +122,30 @@ export class PetsController {
         create: { href: `${host}/pets`, method: 'POST' },
         update: { href: `${host}/pets/:id`, method: 'PUT' },
         delete: { href: `${host}/pets/:id`, method: 'DELETE' },
+      },
+    };
+  }
+
+  @Post(':id/photo')
+  @UseGuards(PetOwnerOrAdminGuard)
+  @UseInterceptors(FileInterceptor('photo'))
+  async uploadPhoto(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new Error('Nenhum arquivo foi enviado');
+    }
+
+    const photoUrl = this.uploadService.generateFileUrl(file.filename, 'pets');
+    const pet = await this.service.updatePhoto(Number(id), photoUrl);
+    const host = process.env.HOST;
+
+    return {
+      data: pet,
+      _link: {
+        self: { href: `${host}/pets/${pet.id}`, method: 'GET' },
+        photo: { href: photoUrl, method: 'GET' },
       },
     };
   }

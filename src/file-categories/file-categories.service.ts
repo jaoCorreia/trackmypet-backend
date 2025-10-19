@@ -11,18 +11,20 @@ export class FileCategoriesService {
     @InjectRepository(FileCategory)
     private readonly fileCategoryRepository: Repository<FileCategory>,
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async create(dto: CreateFileCategoryDto) {
-    const user = await this.userRepository.findOne({ where: { id: dto.userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: dto.userId },
+    });
     if (!user) throw new NotFoundException('User not found');
 
     const fileCategory = this.fileCategoryRepository.create({
-    name: dto.name,
-    user
+      name: dto.name,
+      user,
     });
-    
+
     return await this.fileCategoryRepository.save(fileCategory);
   }
 
@@ -37,30 +39,36 @@ export class FileCategoriesService {
   }
 
   async findOne(id: number) {
-    const fileCategory = await this.fileCategoryRepository.findOne({ where: { id } });
+    const fileCategory = await this.fileCategoryRepository.findOne({
+      where: { id },
+    });
     if (!fileCategory) throw new NotFoundException('File Category not found');
     return fileCategory;
   }
 
   async update(id: number, dto: UpdateFileCategoryDto = {}) {
-    const fileCategory = await this.fileCategoryRepository.findOne({ where: { id } });
-        if (!fileCategory) throw new NotFoundException('File Category not found');
-        
+    const fileCategory = await this.fileCategoryRepository.findOne({
+      where: { id },
+    });
+    if (!fileCategory) throw new NotFoundException('File Category not found');
+
     const { userId = null, ...rest } = dto;
 
     if (userId) {
       const user = await this.userRepository.findOne({ where: { id: userId } });
       if (!user) throw new NotFoundException('User not found');
       fileCategory.user = user;
-        }
-
-        Object.assign(fileCategory, rest);
-
-        return await this.fileCategoryRepository.save(fileCategory);
     }
 
+    Object.assign(fileCategory, rest);
+
+    return await this.fileCategoryRepository.save(fileCategory);
+  }
+
   async delete(id: number) {
-    const fileCategory = await this.fileCategoryRepository.findOne({ where: { id } });
+    const fileCategory = await this.fileCategoryRepository.findOne({
+      where: { id },
+    });
     if (!fileCategory) throw new NotFoundException('File Category not found');
     return await this.fileCategoryRepository.softDelete(id);
   }

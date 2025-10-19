@@ -1,4 +1,4 @@
 export type CreateActivityHistoryDto = {
-    status: boolean;
-    activityScheduleId: number;
-}
+  status: boolean;
+  activityScheduleId: number;
+};
