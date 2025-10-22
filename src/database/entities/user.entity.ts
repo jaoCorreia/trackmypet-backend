@@ -15,6 +15,7 @@ import { Address } from './address.entity';
 import { Activity } from './activity.entity';
 import { UserGender } from './user-gender.enum';
 import { FileCategory } from './file-category.entity';
+import { Notification } from './notification.entity';
 
 @Entity({ name: 'users' })
 export class User {
@@ -71,4 +72,7 @@ export class User {
 
   @OneToMany(() => FileCategory, (file_category) => file_category.user)
   file_categories?: FileCategory[];
+
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications?: Notification[];
 }
