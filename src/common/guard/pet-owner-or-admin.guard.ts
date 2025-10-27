@@ -16,9 +16,8 @@ interface AuthenticatedRequest {
     email: string;
     role: UserRole;
   };
-  params: {
-    id?: string;
-  };
+  // accept any param shape (id, pet_id, petId, etc.)
+  params: Record<string, string | undefined>;
 }
 
 @Injectable()
@@ -31,7 +30,11 @@ export class PetOwnerOrAdminGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const user = request.user;
-    const petIdParam = request.params.id;
+    const petIdParam =
+      request.params['id'] ??
+      request.params['pet_id'] ??
+      request.params['petId'] ??
+      request.params['petId'];
 
     if (!user || !user.sub) {
       throw new UnauthorizedException('User not authenticated');
@@ -51,12 +54,22 @@ export class PetOwnerOrAdminGuard implements CanActivate {
       return true;
     }
 
-    const pet = await this.petRepository.findOne({ where: { id: petId } });
+    const pet = await this.petRepository.findOne({
+      where: { id: petId },
+      relations: ['user'],
+    });
+
     if (!pet) {
       throw new ForbiddenException('Pet not found');
     }
 
-    if (user.sub === pet.user.id) {
+    // ensure user relation is present
+    const ownerId = pet.user?.id;
+    if (!ownerId) {
+      throw new ForbiddenException('Pet owner information unavailable');
+    }
+
+    if (user.sub === ownerId) {
       return true;
     }
 

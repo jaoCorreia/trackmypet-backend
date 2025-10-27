@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CreateAddressDto, UpdateAddressDto } from './dto';
-import { OwnerOrAdminGuard } from 'src/common/guard/owner-or-admin.guard';
+// import { OwnerOrAdminGuard } from 'src/common/guard/owner-or-admin.guard';
 import { RolesGuard } from 'src/common/guard/roles.guard';
 import { UserRole } from 'src/database/entities/user-role.enum';
 import { Roles } from 'src/common/decorator/roles.decorator';
