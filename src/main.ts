@@ -9,7 +9,6 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('api/v1');
 
-  // Servir arquivos estáticos da pasta uploads
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {
     prefix: '/uploads/',
   });
