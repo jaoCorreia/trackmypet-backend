@@ -16,6 +16,7 @@ import { ActivityHistoryModule } from './activity-history/activity-history.modul
 import { FileCategoriesModule } from './file-categories/file-categories.module';
 import { FilesModule } from './files/files.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -50,7 +51,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     ActivityHistoryModule,
     FileCategoriesModule,
     FilesModule,
-    NotificationsModule
+    NotificationsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

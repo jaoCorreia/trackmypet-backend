@@ -9,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CreateAddressDto, UpdateAddressDto } from './dto';
-// import { OwnerOrAdminGuard } from 'src/common/guard/owner-or-admin.guard';
 import { RolesGuard } from 'src/common/guard/roles.guard';
 import { UserRole } from 'src/database/entities/user-role.enum';
 import { Roles } from 'src/common/decorator/roles.decorator';
@@ -20,7 +19,6 @@ export class AddressesController {
   constructor(private readonly service: AddressesService) {}
 
   @Post()
-  //   @UseGuards(OwnerOrAdminGuard)
   async create(@Body() dto: CreateAddressDto) {
     const address = await this.service.create(dto);
     const host = process.env.HOST;
@@ -55,7 +53,6 @@ export class AddressesController {
   }
 
   @Get(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async findOne(@Param('id') id: string) {
     const address = await this.service.findOne(Number(id));
     const host = process.env.HOST;
@@ -72,7 +69,6 @@ export class AddressesController {
   }
 
   @Put(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async update(@Param('id') id: string, @Body() dto: UpdateAddressDto) {
     const address = await this.service.update(Number(id), dto);
     const host = process.env.HOST;
@@ -89,7 +85,6 @@ export class AddressesController {
   }
 
   @Delete(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async remove(@Param('id') id: string) {
     const address = await this.service.delete(Number(id));
     const host = process.env.HOST;

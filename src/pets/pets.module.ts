@@ -8,14 +8,12 @@ import { PetsService } from './pets.service';
 import { PetsController } from './pets.controller';
 import { BreedsModule } from 'src/breeds/breeds.module';
 import { Pet } from 'src/database/entities/pet.entity';
-import { UploadModule } from 'src/upload/upload.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Pet, User, Breed]),
     UsersModule,
     BreedsModule,
-    UploadModule,
   ],
   controllers: [PetsController],
   providers: [PetsService],

@@ -6,25 +6,18 @@ import {
   Param,
   Post,
   Put,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { RolesGuard } from 'src/common/guard/roles.guard';
 import { UserRole } from 'src/database/entities/user-role.enum';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { OwnerOrAdminGuard } from 'src/common/guard/owner-or-admin.guard';
-import { UploadService } from 'src/upload/upload.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly service: UsersService,
-    private readonly uploadService: UploadService,
-  ) {}
+  constructor(private readonly service: UsersService) {}
 
   @Post()
   async create(@Body() dto: CreateUserDto) {
@@ -107,30 +100,6 @@ export class UsersController {
         create: { href: `${host}/users`, method: 'POST' },
         update: { href: `${host}/users/:id`, method: 'PUT' },
         delete: { href: `${host}/users/:id`, method: 'DELETE' },
-      },
-    };
-  }
-
-  @Post(':id/photo')
-  @UseGuards(OwnerOrAdminGuard)
-  @UseInterceptors(FileInterceptor('photo'))
-  async uploadPhoto(
-    @Param('id') id: string,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    if (!file) {
-      throw new Error('Nenhum arquivo foi enviado');
-    }
-
-    const photoUrl = this.uploadService.generateFileUrl(file.filename, 'users');
-    const user = await this.service.updatePhoto(Number(id), photoUrl);
-    const host = process.env.HOST;
-
-    return {
-      data: user,
-      _link: {
-        self: { href: `${host}/users/${user.id}`, method: 'GET' },
-        photo: { href: photoUrl, method: 'GET' },
       },
     };
   }

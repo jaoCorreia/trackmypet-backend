@@ -4,10 +4,9 @@ import { User } from 'src/database/entities/user.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { JwtAuthMiddleware } from 'src/common/middleware/jwt-auth.middleware';
-import { UploadModule } from 'src/upload/upload.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), UploadModule],
+  imports: [TypeOrmModule.forFeature([User])],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],
