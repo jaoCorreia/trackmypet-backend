@@ -8,7 +8,7 @@ async function bootstrap() {
     cors: {
       origin:
         process.env.NODE_ENV === 'production'
-          ? ['https://yourdomain.com']
+          ? ['https://trackmypet.com.br']
           : true,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
