@@ -58,7 +58,7 @@ export async function seedBreeds(dataSource: DataSource) {
     { name: 'Birmanês', specie: gato },
     { name: 'Angorá', specie: gato },
     { name: 'Exotic Shorthair', specie: gato },
-    { name: 'Vira-lata (SRD)', specie: gato },
+    { name: 'Gato sem raça (SRD)', specie: gato },
 
     // Tipos de Pássaros
     { name: 'Calopsita', specie: passaro },
