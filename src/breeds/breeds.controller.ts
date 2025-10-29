@@ -1,16 +1,25 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
-import { CreateBreedDto, UpdateBreedDto } from "./dto";
-import { RolesGuard } from "src/common/guard/roles.guard";
-import { Roles } from "src/common/decorator/roles.decorator";
-import { UserRole } from "src/database/entities/user-role.enum";
-import { BreedsService } from "./breeds.service";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
+import { CreateBreedDto, UpdateBreedDto } from './dto';
+import { RolesGuard } from 'src/common/guard/roles.guard';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { UserRole } from 'src/database/entities/user-role.enum';
+import { BreedsService } from './breeds.service';
 
 @Controller('breeds')
-export class BreedController {
-    constructor(private readonly service: BreedsService){}
+export class BreedsController {
+  constructor(private readonly service: BreedsService) {}
 
   @Post()
-    @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   async create(@Body() dto: CreateBreedDto) {
     const breed = await this.service.create(dto);
@@ -25,7 +34,7 @@ export class BreedController {
         delete: { href: `${host}/breeds/${breed.id}`, method: 'DELETE' },
       },
     };
-  }    
+  }
 
   @Get()
   async findAll() {
@@ -58,9 +67,9 @@ export class BreedController {
       },
     };
   }
-  
+
   @Put(':id')
- @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   async update(@Param('id') id: string, @Body() dto: UpdateBreedDto) {
     const breed = await this.service.update(Number(id), dto);
@@ -93,5 +102,5 @@ export class BreedController {
         delete: { href: `${host}/breeds/:id`, method: 'DELETE' },
       },
     };
-  }  
+  }
 }

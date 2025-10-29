@@ -1,4 +1,4 @@
-export type UpdateBreedDto={
-        name?: string;
-        specieId?: number;     
-}
+export type UpdateBreedDto = {
+  name?: string;
+  specieId?: number;
+};

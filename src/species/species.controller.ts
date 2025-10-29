@@ -1,16 +1,25 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
-import { SpeciesService } from "./species.service";
-import { CreateSpecieDto, UpdateSpecieDto } from "./dto";
-import { RolesGuard } from "src/common/guard/roles.guard";
-import { Roles } from "src/common/decorator/roles.decorator";
-import { UserRole } from "src/database/entities/user-role.enum";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
+import { SpeciesService } from './species.service';
+import { CreateSpecieDto, UpdateSpecieDto } from './dto';
+import { RolesGuard } from 'src/common/guard/roles.guard';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { UserRole } from 'src/database/entities/user-role.enum';
 
 @Controller('species')
 export class SpeciesController {
-    constructor(private readonly service: SpeciesService){}
+  constructor(private readonly service: SpeciesService) {}
 
   @Post()
-    @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   async create(@Body() dto: CreateSpecieDto) {
     const specie = await this.service.create(dto);
@@ -25,7 +34,7 @@ export class SpeciesController {
         delete: { href: `${host}/species/${specie.id}`, method: 'DELETE' },
       },
     };
-  }    
+  }
 
   @Get()
   async findAll() {
@@ -58,9 +67,9 @@ export class SpeciesController {
       },
     };
   }
-  
+
   @Put(':id')
- @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   async update(@Param('id') id: string, @Body() dto: UpdateSpecieDto) {
     const specie = await this.service.update(Number(id), dto);
@@ -93,5 +102,5 @@ export class SpeciesController {
         delete: { href: `${host}/species/:id`, method: 'DELETE' },
       },
     };
-  }  
+  }
 }

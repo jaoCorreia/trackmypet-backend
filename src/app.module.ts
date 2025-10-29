@@ -7,6 +7,16 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { SpeciesModule } from './species/species.module';
 import { BreedsModule } from './breeds/breeds.module';
+import { PetsModule } from './pets/pets.module';
+import { AddressesModule } from './addresses/addresses.module';
+import { ActivitiesModule } from './activities/activity.module';
+import { ActivitySchedulesModule } from './activity-schedules/activity-schedules.module';
+import { IncidentsModule } from './incidents/incidents.module';
+import { ActivityHistoryModule } from './activity-history/activity-history.module';
+import { FileCategoriesModule } from './file-categories/file-categories.module';
+import { FilesModule } from './files/files.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -32,7 +42,17 @@ import { BreedsModule } from './breeds/breeds.module';
     UsersModule,
     AuthModule,
     SpeciesModule,
-    BreedsModule
+    BreedsModule,
+    PetsModule,
+    AddressesModule,
+    ActivitiesModule,
+    ActivitySchedulesModule,
+    IncidentsModule,
+    ActivityHistoryModule,
+    FileCategoriesModule,
+    FilesModule,
+    NotificationsModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

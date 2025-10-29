@@ -2,6 +2,8 @@ import { DataSource } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { config } from 'dotenv';
 import { seedAdmin } from './admin.seed';
+import { seedSpecies } from './species.seed';
+import { seedBreeds } from './breeds.seed';
 
 // Carregar variáveis de ambiente
 config();
@@ -15,7 +17,7 @@ const AppDataSource = new DataSource({
   username: configService.get('DB_USER', 'root'),
   password: configService.get('DB_PASS', ''),
   database: configService.get('DB_NAME', 'trackmypet'),
-  entities: ['src/database/entities/**/*.entity.ts'],
+  entities: ['src/database/entities/**/*.{ts,entity.ts}'],
   synchronize: false,
 });
 
@@ -27,6 +29,8 @@ async function runSeeds() {
     console.log('✅ Database connection established\n');
 
     await seedAdmin(AppDataSource);
+    await seedSpecies(AppDataSource);
+    await seedBreeds(AppDataSource);
 
     console.log('\n🎉 Seeding completed successfully!');
     await AppDataSource.destroy();
