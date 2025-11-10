@@ -3,7 +3,6 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -48,6 +47,14 @@ export class User {
 
   @Column({ name: 'phone_number', type: 'varchar', length: 25, unique: true })
   phoneNumber: string;
+
+  @Column({
+    name: 'device_token',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  deviceToken?: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt?: Date;

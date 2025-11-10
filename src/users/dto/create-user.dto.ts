@@ -11,4 +11,5 @@ export type CreateUserDto = {
   birthDate: Date;
   phoneNumber: string;
   gender: UserGender;
+  deviceToken?: string;
 };

@@ -6,12 +6,7 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
-import { OwnerOrAdminGuard } from 'src/common/guard/owner-or-admin.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
-import { UserRole } from 'src/database/entities/user-role.enum';
-import { Roles } from 'src/common/decorator/roles.decorator';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto, UpdateNotificationDto } from './dto';
 
@@ -128,6 +123,25 @@ export class NotificationsController {
         create: { href: `${host}/notifications`, method: 'POST' },
         update: { href: `${host}/notifications/:id`, method: 'PUT' },
         delete: { href: `${host}/notifications/:id`, method: 'DELETE' },
+      },
+    };
+  }
+
+  @Post(':id/send')
+  //   @UseGuards(OwnerOrAdminGuard)
+  async sendNow(@Param('id') id: string) {
+    const notification = await this.service.sendScheduledNotification(
+      Number(id),
+    );
+    const host = process.env.HOST;
+    return {
+      data: notification,
+      message: 'Push notification sent successfully',
+      _link: {
+        self: {
+          href: `${host}/notifications/${notification.id}`,
+          method: 'GET',
+        },
       },
     };
   }

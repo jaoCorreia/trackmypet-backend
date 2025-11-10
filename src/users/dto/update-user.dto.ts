@@ -11,4 +11,5 @@ export class UpdateUserDto {
   birthDate?: Date;
   phoneNumber?: string;
   gender?: UserGender;
+  deviceToken?: string;
 }

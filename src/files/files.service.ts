@@ -32,16 +32,15 @@ export class FilesService {
       fileUrl: dto.fileUrl,
       name: dto.name,
       fileCategory,
-      pet
+      pet,
     });
 
     return await this.fileRepository.save(file);
   }
 
-  async findAll(petId?: number, fileCategoryId?: number) {
-    const where: any = {};
+  async findAll(petId?: number) {
+    const where: Partial<{ pet: { id: number } }> = {};
     if (petId) where.pet = { id: petId };
-    if (fileCategoryId) where.file_category = { id: fileCategoryId };
 
     return await this.fileRepository.find({
       where,

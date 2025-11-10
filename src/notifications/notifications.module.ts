@@ -1,16 +1,24 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 import { JwtAuthMiddleware } from 'src/common/middleware/jwt-auth.middleware';
 import { Notification } from 'src/database/entities/notification.entity';
 import { User } from 'src/database/entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
+import { FirebaseModule } from 'src/firebase/firebase.module';
 import { NotificationsController } from './notifications.controller';
 import { NotificationsService } from './notifications.service';
+import { NotificationsScheduler } from './notifications.scheduler';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Notification, User]), UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([Notification, User]),
+    ScheduleModule.forRoot(),
+    UsersModule,
+    FirebaseModule,
+  ],
   controllers: [NotificationsController],
-  providers: [NotificationsService],
+  providers: [NotificationsService, NotificationsScheduler],
   exports: [NotificationsService],
 })
 export class NotificationsModule {

@@ -103,4 +103,21 @@ export class UsersController {
       },
     };
   }
+
+  @Put(':id/device-token')
+  @UseGuards(OwnerOrAdminGuard)
+  async updateDeviceToken(
+    @Param('id') id: string,
+    @Body('deviceToken') deviceToken: string,
+  ) {
+    const user = await this.service.updateDeviceToken(Number(id), deviceToken);
+    const host = process.env.HOST;
+    return {
+      data: { id: user.id, deviceToken: user.deviceToken },
+      message: 'Device token updated successfully',
+      _link: {
+        self: { href: `${host}/users/${user.id}`, method: 'GET' },
+      },
+    };
+  }
 }

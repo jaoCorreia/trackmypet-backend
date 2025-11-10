@@ -66,4 +66,12 @@ export class UsersService {
     user.photo = photoUrl;
     return await this.userRepository.save(user);
   }
+
+  async updateDeviceToken(id: number, deviceToken: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+
+    user.deviceToken = deviceToken;
+    return await this.userRepository.save(user);
+  }
 }

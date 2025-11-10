@@ -6,12 +6,8 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
+  Query,
 } from '@nestjs/common';
-import { OwnerOrAdminGuard } from 'src/common/guard/owner-or-admin.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
-import { UserRole } from 'src/database/entities/user-role.enum';
-import { Roles } from 'src/common/decorator/roles.decorator';
 import { FilesService } from './files.service';
 import { CreateFileDto, UpdateFileDto } from './dto';
 
@@ -37,10 +33,8 @@ export class FilesController {
   }
 
   @Get()
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async findAll() {
-    const files = await this.service.findAll();
+  async findAll(@Query('petId') petId?: number) {
+    const files = await this.service.findAll(petId);
     const host = process.env.HOST;
     return {
       data: files,
