@@ -4,14 +4,13 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RefreshToken } from '../database/entities/refresh_token.entity';
 import { PasswordReset } from '../database/entities/password-reset.entity';
-import { EmailVerification } from '../database/entities/email-verification.entity';
 import { UsersModule } from '../users/users.module';
 import { EmailModule } from '../email/email.module';
 import { JwtAuthMiddleware } from '../common/middleware/jwt-auth.middleware';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([RefreshToken, PasswordReset, EmailVerification]),
+    TypeOrmModule.forFeature([RefreshToken, PasswordReset]),
     UsersModule,
     EmailModule,
   ],

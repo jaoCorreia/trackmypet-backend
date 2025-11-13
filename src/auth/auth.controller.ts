@@ -4,7 +4,6 @@ import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { VerifyResetCodeDto } from './dto/verify-reset-code.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { VerifyEmailDto } from './dto/verify-email.dto';
 import { CurrentUser } from 'src/common/decorator/current-user.decorator';
 
 interface JwtPayload {
@@ -65,15 +64,9 @@ export class AuthController {
     return this.authService.resetPassword(dto.email, dto.code, dto.newPassword);
   }
 
-  @Post('verify-email')
+  @Post('check-email')
   @HttpCode(200)
-  async verifyEmail(@Body() dto: VerifyEmailDto) {
-    return this.authService.verifyEmail(dto.email, dto.code);
-  }
-
-  @Post('send-email-verification')
-  @HttpCode(200)
-  async sendVerification(@Body() dto: ForgotPasswordDto) {
-    return this.authService.sendEmailVerification(dto.email);
+  async checkEmail(@Body() dto: ForgotPasswordDto) {
+    return this.authService.checkEmailAvailability(dto.email);
   }
 }

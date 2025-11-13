@@ -8,7 +8,6 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RefreshToken } from '../database/entities/refresh_token.entity';
 import { PasswordReset } from '../database/entities/password-reset.entity';
-import { EmailVerification } from '../database/entities/email-verification.entity';
 import { Repository } from 'typeorm';
 import * as jwt from 'jsonwebtoken';
 import * as crypto from 'crypto';
@@ -32,8 +31,6 @@ export class AuthService {
     private readonly refreshTokenRepository: Repository<RefreshToken>,
     @InjectRepository(PasswordReset)
     private readonly passwordResetRepository: Repository<PasswordReset>,
-    @InjectRepository(EmailVerification)
-    private readonly emailVerificationRepository: Repository<EmailVerification>,
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,
@@ -265,67 +262,18 @@ export class AuthService {
     return { valid: true, message: 'Password reset successfully' };
   }
 
-  async sendEmailVerification(email: string) {
+  async checkEmailAvailability(email: string) {
     const user = await this.usersService.findByEmail(email);
-    if (!user) {
-      throw new NotFoundException('User not found');
+    if (user) {
+      throw new BadRequestException('Email already exists');
     }
+
     const { code } = await this.emailService.sendSecurityCode(email);
 
-    const codeHash = await bcrypt.hash(code, 10);
-
-    const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + 5);
-
-    await this.emailVerificationRepository.delete({ user_id: user.id });
-
-    const emailVerification = this.emailVerificationRepository.create({
-      user_id: user.id,
-      code_hash: codeHash,
-      expires_at: expiresAt,
-      attempts: 0,
-    });
-
-    await this.emailVerificationRepository.save(emailVerification);
-
-    return { valid: true, message: 'Verification code sent to email' };
-  }
-
-  async verifyEmail(email: string, code: string) {
-    const user = await this.usersService.findByEmail(email);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const emailVerification = await this.emailVerificationRepository.findOne({
-      where: { user_id: user.id },
-      order: { created_at: 'DESC' },
-    });
-
-    if (!emailVerification) {
-      throw new BadRequestException('No verification request found');
-    }
-
-    if (emailVerification.expires_at < new Date()) {
-      await this.emailVerificationRepository.delete(emailVerification.id);
-      throw new BadRequestException('Verification code expired');
-    }
-
-    if (emailVerification.attempts >= 3) {
-      await this.emailVerificationRepository.delete(emailVerification.id);
-      throw new BadRequestException('Too many failed attempts');
-    }
-
-    const isValidCode = await bcrypt.compare(code, emailVerification.code_hash);
-
-    if (!isValidCode) {
-      emailVerification.attempts += 1;
-      await this.emailVerificationRepository.save(emailVerification);
-      throw new BadRequestException('Invalid verification code');
-    }
-
-    await this.emailVerificationRepository.delete(emailVerification.id);
-
-    return { valid: true, message: 'Email verified successfully' };
+    return {
+      available: true,
+      message: 'Email is available. Verification code sent.',
+      code,
+    };
   }
 }
