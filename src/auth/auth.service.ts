@@ -1,7 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RefreshToken } from '../database/entities/refresh_token.entity';
+import { PasswordReset } from '../database/entities/password-reset.entity';
+import { EmailVerification } from '../database/entities/email-verification.entity';
 import { Repository } from 'typeorm';
 import * as jwt from 'jsonwebtoken';
 import * as crypto from 'crypto';
@@ -10,6 +17,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { User } from '../database/entities/user.entity';
 import { UsersService } from '../users/users.service';
+import { EmailService } from '../email/email.service';
 
 const ACCESS_TOKEN_EXPIRES_IN = '15m';
 const REFRESH_TOKEN_EXPIRES_DAYS = 30;
@@ -22,8 +30,13 @@ export class AuthService {
   constructor(
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
+    @InjectRepository(PasswordReset)
+    private readonly passwordResetRepository: Repository<PasswordReset>,
+    @InjectRepository(EmailVerification)
+    private readonly emailVerificationRepository: Repository<EmailVerification>,
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
+    private readonly emailService: EmailService,
   ) {
     // Read file paths from .env
     const privateKeyPath = this.configService.get<string>(
@@ -138,5 +151,181 @@ export class AuthService {
   async getCurrentUser(userId: number) {
     const user = await this.usersService.findOne(userId);
     return user;
+  }
+
+  // Password Reset Methods
+  async requestPasswordReset(email: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Generate 6-digit code
+    const { code } = await this.emailService.sendSecurityCode(email);
+
+    // Hash the code
+    const codeHash = await bcrypt.hash(code, 10);
+
+    // Set expiration to 5 minutes
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 5);
+
+    // Delete any existing password reset requests for this user
+    await this.passwordResetRepository.delete({ user_id: user.id });
+
+    // Create new password reset record
+    const passwordReset = this.passwordResetRepository.create({
+      user_id: user.id,
+      token_hash: codeHash,
+      expires_at: expiresAt,
+      attempts: 0,
+    });
+
+    await this.passwordResetRepository.save(passwordReset);
+
+    return { valid: true, message: 'Password reset code sent to email' };
+  }
+
+  async verifyResetCode(email: string, code: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const passwordReset = await this.passwordResetRepository.findOne({
+      where: { user_id: user.id },
+      order: { created_at: 'DESC' },
+    });
+
+    if (!passwordReset) {
+      throw new BadRequestException('No password reset request found');
+    }
+
+    if (passwordReset.expires_at < new Date()) {
+      await this.passwordResetRepository.delete(passwordReset.id);
+      throw new BadRequestException('Reset code expired');
+    }
+
+    if (passwordReset.attempts >= 3) {
+      await this.passwordResetRepository.delete(passwordReset.id);
+      throw new BadRequestException('Too many failed attempts');
+    }
+
+    const isValidCode = await bcrypt.compare(code, passwordReset.token_hash);
+
+    if (!isValidCode) {
+      passwordReset.attempts += 1;
+      await this.passwordResetRepository.save(passwordReset);
+      throw new BadRequestException('Invalid reset code');
+    }
+
+    return { valid: true, message: 'Code verified successfully' };
+  }
+
+  async resetPassword(email: string, code: string, newPassword: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const passwordReset = await this.passwordResetRepository.findOne({
+      where: { user_id: user.id },
+      order: { created_at: 'DESC' },
+    });
+
+    if (!passwordReset) {
+      throw new BadRequestException('No password reset request found');
+    }
+
+    if (passwordReset.expires_at < new Date()) {
+      await this.passwordResetRepository.delete(passwordReset.id);
+      throw new BadRequestException('Reset code expired');
+    }
+
+    if (passwordReset.attempts >= 3) {
+      await this.passwordResetRepository.delete(passwordReset.id);
+      throw new BadRequestException('Too many failed attempts');
+    }
+
+    const isValidCode = await bcrypt.compare(code, passwordReset.token_hash);
+
+    if (!isValidCode) {
+      passwordReset.attempts += 1;
+      await this.passwordResetRepository.save(passwordReset);
+      throw new BadRequestException('Invalid reset code');
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await this.usersService.updatePassword(user.id, passwordHash);
+
+    await this.passwordResetRepository.delete(passwordReset.id);
+
+    await this.refreshTokenRepository.delete({ user: { id: user.id } });
+
+    return { valid: true, message: 'Password reset successfully' };
+  }
+
+  async sendEmailVerification(email: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const { code } = await this.emailService.sendSecurityCode(email);
+
+    const codeHash = await bcrypt.hash(code, 10);
+
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 5);
+
+    await this.emailVerificationRepository.delete({ user_id: user.id });
+
+    const emailVerification = this.emailVerificationRepository.create({
+      user_id: user.id,
+      code_hash: codeHash,
+      expires_at: expiresAt,
+      attempts: 0,
+    });
+
+    await this.emailVerificationRepository.save(emailVerification);
+
+    return { valid: true, message: 'Verification code sent to email' };
+  }
+
+  async verifyEmail(email: string, code: string) {
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const emailVerification = await this.emailVerificationRepository.findOne({
+      where: { user_id: user.id },
+      order: { created_at: 'DESC' },
+    });
+
+    if (!emailVerification) {
+      throw new BadRequestException('No verification request found');
+    }
+
+    if (emailVerification.expires_at < new Date()) {
+      await this.emailVerificationRepository.delete(emailVerification.id);
+      throw new BadRequestException('Verification code expired');
+    }
+
+    if (emailVerification.attempts >= 3) {
+      await this.emailVerificationRepository.delete(emailVerification.id);
+      throw new BadRequestException('Too many failed attempts');
+    }
+
+    const isValidCode = await bcrypt.compare(code, emailVerification.code_hash);
+
+    if (!isValidCode) {
+      emailVerification.attempts += 1;
+      await this.emailVerificationRepository.save(emailVerification);
+      throw new BadRequestException('Invalid verification code');
+    }
+
+    await this.emailVerificationRepository.delete(emailVerification.id);
+
+    return { valid: true, message: 'Email verified successfully' };
   }
 }

@@ -6,12 +6,10 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
-import { OwnerOrAdminGuard } from 'src/common/guard/owner-or-admin.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
 import { UserRole } from 'src/database/entities/user-role.enum';
-import { Roles } from 'src/common/decorator/roles.decorator';
+import { CurrentUser } from 'src/common/decorator/current-user.decorator';
+import { User } from 'src/database/entities/user.entity';
 import { FileCategoriesService } from './file-categories.service';
 import { CreateFileCategoryDto, UpdateFileCategoryDto } from './dto';
 
@@ -20,7 +18,6 @@ export class FileCategoriesController {
   constructor(private readonly service: FileCategoriesService) {}
 
   @Post()
-  //   @UseGuards(OwnerOrAdminGuard)
   async create(@Body() dto: CreateFileCategoryDto) {
     const fileCategory = await this.service.create(dto);
     const host = process.env.HOST;
@@ -46,10 +43,9 @@ export class FileCategoriesController {
   }
 
   @Get()
-  //   @UseGuards(RolesGuard)
-  //   @Roles(UserRole.ADMIN)
-  async findAll() {
-    const fileCategory = await this.service.findAll();
+  async findAll(@CurrentUser() user: User) {
+    const userId = user.role === UserRole.ADMIN ? undefined : user.id;
+    const fileCategory = await this.service.findAll(userId);
     const host = process.env.HOST;
     return {
       data: fileCategory,
@@ -64,7 +60,6 @@ export class FileCategoriesController {
   }
 
   @Get(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async findOne(@Param('id') id: string) {
     const fileCategory = await this.service.findOne(Number(id));
     const host = process.env.HOST;
@@ -90,7 +85,6 @@ export class FileCategoriesController {
   }
 
   @Put(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async update(@Param('id') id: string, @Body() dto: UpdateFileCategoryDto) {
     const fileCategory = await this.service.update(Number(id), dto);
     const host = process.env.HOST;
@@ -116,7 +110,6 @@ export class FileCategoriesController {
   }
 
   @Delete(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async remove(@Param('id') id: string) {
     const fileCategory = await this.service.delete(Number(id));
     const host = process.env.HOST;

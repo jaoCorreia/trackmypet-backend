@@ -1,6 +1,10 @@
 import { Controller, Post, Body, HttpCode, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { VerifyResetCodeDto } from './dto/verify-reset-code.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { VerifyEmailDto } from './dto/verify-email.dto';
 import { CurrentUser } from 'src/common/decorator/current-user.decorator';
 
 interface JwtPayload {
@@ -41,5 +45,35 @@ export class AuthController {
   async self(@CurrentUser() user: JwtPayload) {
     const userData = await this.authService.getCurrentUser(user.sub);
     return { data: userData };
+  }
+
+  @Post('forgot-password')
+  @HttpCode(200)
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.authService.requestPasswordReset(dto.email);
+  }
+
+  @Post('verify-reset-code')
+  @HttpCode(200)
+  async verifyResetCode(@Body() dto: VerifyResetCodeDto) {
+    return this.authService.verifyResetCode(dto.email, dto.code);
+  }
+
+  @Post('reset-password')
+  @HttpCode(200)
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.authService.resetPassword(dto.email, dto.code, dto.newPassword);
+  }
+
+  @Post('verify-email')
+  @HttpCode(200)
+  async verifyEmail(@Body() dto: VerifyEmailDto) {
+    return this.authService.verifyEmail(dto.email, dto.code);
+  }
+
+  @Post('send-email-verification')
+  @HttpCode(200)
+  async sendVerification(@Body() dto: ForgotPasswordDto) {
+    return this.authService.sendEmailVerification(dto.email);
   }
 }

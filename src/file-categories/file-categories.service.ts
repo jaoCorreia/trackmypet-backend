@@ -29,13 +29,18 @@ export class FileCategoriesService {
   }
 
   async findAll(userId?: number) {
-    const where: any = {};
-    if (userId) where.user = { id: userId };
+    if (!userId) {
+      return await this.fileCategoryRepository.find({
+        relations: ['user'],
+      });
+    }
 
-    return await this.fileCategoryRepository.find({
-      where,
-      relations: ['user'],
-    });
+    return await this.fileCategoryRepository
+      .createQueryBuilder('fileCategory')
+      .leftJoinAndSelect('fileCategory.user', 'user')
+      .where('fileCategory.user IS NULL')
+      .orWhere('user.id = :userId', { userId })
+      .getMany();
   }
 
   async findOne(id: number) {

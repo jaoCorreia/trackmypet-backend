@@ -74,4 +74,13 @@ export class UsersService {
     user.deviceToken = deviceToken;
     return await this.userRepository.save(user);
   }
+
+  async updatePassword(id: number, passwordHash: string) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+
+    await this.userRepository.update(id, { passwordHash });
+
+    return user;
+  }
 }
