@@ -51,7 +51,7 @@ export class FirebaseService {
       const response = await admin.messaging().send(message);
       this.logger.log(`Push notification sent successfully: ${response}`);
       return response;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Error sending push notification: ${error.message}`);
       throw error;
     }

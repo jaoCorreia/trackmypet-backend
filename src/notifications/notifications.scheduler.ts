@@ -21,7 +21,6 @@ export class NotificationsScheduler {
 
     const now = new Date();
 
-    // Buscar notificações agendadas para envio (scheduledAt <= now e sentAt = null)
     const pendingNotifications = await this.notificationRepository.find({
       where: {
         scheduledAt: LessThanOrEqual(now),

@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pet } from 'src/database/entities/pet.entity';
 import { Incident } from 'src/database/entities/incident.entity';
-import { CreateIncidentDto, UpdateIncidentDto } from './dto';
+import { CreateIncidentDto } from './dto';
 
 @Injectable()
 export class IncidentsService {
@@ -28,14 +28,17 @@ export class IncidentsService {
     return await this.incidentRepository.save(incident);
   }
 
-  async findAll(petId?: number) {
-    const where: any = {};
-    if (petId) where.user = { id: petId };
+  async findAll(userId?: number) {
+    const queryBuilder = this.incidentRepository
+      .createQueryBuilder('incident')
+      .leftJoinAndSelect('incident.pet', 'pet')
+      .leftJoinAndSelect('pet.user', 'user');
 
-    return await this.incidentRepository.find({
-      where,
-      relations: ['pet'],
-    });
+    if (userId) {
+      queryBuilder.where('user.id = :userId', { userId });
+    }
+
+    return await queryBuilder.getMany();
   }
 
   async findOne(id: number) {
