@@ -9,9 +9,14 @@ import {
 } from '@nestjs/common';
 import { UserRole } from 'src/database/entities/user-role.enum';
 import { CurrentUser } from 'src/common/decorator/current-user.decorator';
-import { User } from 'src/database/entities/user.entity';
 import { FileCategoriesService } from './file-categories.service';
 import { CreateFileCategoryDto, UpdateFileCategoryDto } from './dto';
+
+interface JwtPayload {
+  sub: number;
+  email: string;
+  role: UserRole;
+}
 
 @Controller('file_categories')
 export class FileCategoriesController {
@@ -43,8 +48,8 @@ export class FileCategoriesController {
   }
 
   @Get()
-  async findAll(@CurrentUser() user: User) {
-    const userId = user.role === UserRole.ADMIN ? undefined : user.id;
+  async findAll(@CurrentUser() user: JwtPayload) {
+    const userId = user.role === UserRole.ADMIN ? undefined : Number(user.sub);
     const fileCategory = await this.service.findAll(userId);
     const host = process.env.HOST;
     return {

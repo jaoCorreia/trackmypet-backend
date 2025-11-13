@@ -2,8 +2,13 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CreateIncidentDto } from './dto';
 import { IncidentsService } from './incidents.service';
 import { CurrentUser } from 'src/common/decorator/current-user.decorator';
-import { User } from 'src/database/entities/user.entity';
 import { UserRole } from 'src/database/entities/user-role.enum';
+
+interface JwtPayload {
+  sub: number;
+  email: string;
+  role: UserRole;
+}
 
 @Controller('incidents')
 export class IncidentsController {
@@ -26,8 +31,8 @@ export class IncidentsController {
   }
 
   @Get()
-  async findAll(@CurrentUser() user: User) {
-    const userId = user.role === UserRole.ADMIN ? undefined : user.id;
+  async findAll(@CurrentUser() user: JwtPayload) {
+    const userId = user.role === UserRole.ADMIN ? undefined : Number(user.sub);
     const incidents = await this.service.findAll(userId);
     const host = process.env.HOST;
     return {

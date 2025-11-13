@@ -6,6 +6,8 @@ import { Pet } from 'src/database/entities/pet.entity';
 import { FileCategory } from 'src/database/entities/file-category.entity';
 import { PetsModule } from 'src/pets/pets.module';
 import { FileCategoriesModule } from 'src/file-categories/file-categories.module';
+import { S3Module } from 'src/s3/s3.module';
+import { AuthModule } from 'src/auth/auth.module';
 import { FilesController } from './files.controller';
 import { FilesService } from './files.service';
 
@@ -14,6 +16,8 @@ import { FilesService } from './files.service';
     TypeOrmModule.forFeature([File, Pet, FileCategory]),
     PetsModule,
     FileCategoriesModule,
+    S3Module,
+    AuthModule,
   ],
   controllers: [FilesController],
   providers: [FilesService],
