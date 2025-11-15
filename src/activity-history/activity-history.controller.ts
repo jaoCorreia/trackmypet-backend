@@ -6,13 +6,10 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
+  Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateActivityHistoryDto, UpdateActivityHistoryDto } from './dto';
-import { OwnerOrAdminGuard } from 'src/common/guard/owner-or-admin.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
-import { UserRole } from 'src/database/entities/user-role.enum';
-import { Roles } from 'src/common/decorator/roles.decorator';
 import { ActivityHistoryService } from './activity-history.service';
 
 @Controller('activity_history')
@@ -45,8 +42,23 @@ export class ActivityHistoryController {
   @Get()
   //   @UseGuards(RolesGuard)
   //   @Roles(UserRole.ADMIN)
-  async findAll() {
-    const history = await this.service.findAll();
+  async findAll(
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('activityScheduleId') activityScheduleId?: string,
+  ) {
+    if (startDate && isNaN(Date.parse(startDate))) {
+      throw new BadRequestException('Invalid startDate');
+    }
+    if (endDate && isNaN(Date.parse(endDate))) {
+      throw new BadRequestException('Invalid endDate');
+    }
+
+    const history = await this.service.findAll(
+      activityScheduleId ? Number(activityScheduleId) : undefined,
+      startDate,
+      endDate,
+    );
     const host = process.env.HOST;
     return {
       data: history,

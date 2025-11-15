@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from 'src/database/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Repository, FindOptionsWhere } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Activity } from 'src/database/entities/activity.entity';
 import { CreateActivityDto, UpdateActivityDto } from './dto';
@@ -31,7 +31,7 @@ export class ActivitiesService {
   }
 
   async findAll(userId?: number) {
-    const where: any = {};
+    const where: FindOptionsWhere<Activity> = {} as FindOptionsWhere<Activity>;
     if (userId) where.user = { id: userId };
 
     return await this.activityRepository.find({

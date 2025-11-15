@@ -6,13 +6,10 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
+  Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateScheduleDto, UpdateScheduleDto } from './dto';
-import { OwnerOrAdminGuard } from 'src/common/guard/owner-or-admin.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
-import { UserRole } from 'src/database/entities/user-role.enum';
-import { Roles } from 'src/common/decorator/roles.decorator';
 import { ActivitySchedulesService } from './activity-schedules.service';
 
 @Controller('activity_schedules')
@@ -46,10 +43,32 @@ export class ActivitySchedulesController {
   }
 
   @Get()
-  //   @UseGuards(RolesGuard)
-  //   @Roles(UserRole.ADMIN)
-  async findAll() {
-    const schedules = await this.service.findAll();
+  async findAll(
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('petId') petId?: string,
+    @Query('activityId') activityId?: string,
+    @Query('today') today?: string,
+  ) {
+    if (startDate && isNaN(Date.parse(startDate))) {
+      throw new BadRequestException('Invalid startDate');
+    }
+    if (endDate && isNaN(Date.parse(endDate))) {
+      throw new BadRequestException('Invalid endDate');
+    }
+
+    const schedules =
+      today === 'true'
+        ? await this.service.findForToday(
+            petId ? Number(petId) : undefined,
+            activityId ? Number(activityId) : undefined,
+          )
+        : await this.service.findAll(
+            petId ? Number(petId) : undefined,
+            activityId ? Number(activityId) : undefined,
+            startDate,
+            endDate,
+          );
     const host = process.env.HOST;
     return {
       data: schedules,

@@ -29,14 +29,37 @@ export class ActivityHistoryService {
     return await this.activityHistoryRepository.save(activityHistory);
   }
 
-  async findAll(activityScheduleId?: number) {
-    const where: any = {};
-    if (activityScheduleId) where.activitySchedule = { id: activityScheduleId };
+  async findAll(
+    activityScheduleId?: number,
+    startDate?: string,
+    endDate?: string,
+  ) {
+    const queryBuilder = this.activityHistoryRepository
+      .createQueryBuilder('activityHistory')
+      .leftJoinAndSelect(
+        'activityHistory.activitySchedule',
+        'activitySchedule',
+      );
 
-    return await this.activityHistoryRepository.find({
-      where,
-      relations: ['activitySchedule'],
-    });
+    if (activityScheduleId) {
+      queryBuilder.andWhere('activitySchedule.id = :activityScheduleId', {
+        activityScheduleId,
+      });
+    }
+
+    if (startDate) {
+      queryBuilder.andWhere('activityHistory.createdAt >= :startDate', {
+        startDate: new Date(startDate),
+      });
+    }
+
+    if (endDate) {
+      queryBuilder.andWhere('activityHistory.createdAt <= :endDate', {
+        endDate: new Date(endDate),
+      });
+    }
+
+    return await queryBuilder.getMany();
   }
 
   async findOne(id: number) {

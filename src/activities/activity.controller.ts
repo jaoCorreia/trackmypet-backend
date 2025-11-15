@@ -6,21 +6,22 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
-import { OwnerOrAdminGuard } from 'src/common/guard/owner-or-admin.guard';
-import { RolesGuard } from 'src/common/guard/roles.guard';
-import { UserRole } from 'src/database/entities/user-role.enum';
-import { Roles } from 'src/common/decorator/roles.decorator';
+import { CurrentUser } from 'src/common/decorator/current-user.decorator';
 import { CreateActivityDto, UpdateActivityDto } from './dto';
 import { ActivitiesService } from './activity.service';
+
+interface JwtPayload {
+  sub: number;
+  email: string;
+  role: string;
+}
 
 @Controller('activities')
 export class ActivitiesController {
   constructor(private readonly service: ActivitiesService) {}
 
   @Post()
-  //   @UseGuards(OwnerOrAdminGuard)
   async create(@Body() dto: CreateActivityDto) {
     const activity = await this.service.create(dto);
     const host = process.env.HOST;
@@ -37,10 +38,9 @@ export class ActivitiesController {
   }
 
   @Get()
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.ADMIN)
-  async findAll() {
-    const activities = await this.service.findAll();
+  async findAll(@CurrentUser() user: JwtPayload) {
+    const userId = user.role === 'admin' ? undefined : user.sub;
+    const activities = await this.service.findAll(userId);
     const host = process.env.HOST;
     return {
       data: activities,
@@ -55,7 +55,6 @@ export class ActivitiesController {
   }
 
   @Get(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async findOne(@Param('id') id: string) {
     const activity = await this.service.findOne(Number(id));
     const host = process.env.HOST;
@@ -72,7 +71,6 @@ export class ActivitiesController {
   }
 
   @Put(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async update(@Param('id') id: string, @Body() dto: UpdateActivityDto) {
     const activity = await this.service.update(Number(id), dto);
     const host = process.env.HOST;
@@ -89,7 +87,6 @@ export class ActivitiesController {
   }
 
   @Delete(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async remove(@Param('id') id: string) {
     const activity = await this.service.delete(Number(id));
     const host = process.env.HOST;

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, Between, FindOptionsWhere } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Activity } from 'src/database/entities/activity.entity';
 import { CreateScheduleDto, UpdateScheduleDto } from './dto';
@@ -39,15 +39,60 @@ export class ActivitySchedulesService {
     return await this.activityScheduleRepository.save(activitySchedule);
   }
 
-  async findAll(petId?: number, activityId?: number) {
-    const where: any = {};
+  async findAll(
+    petId?: number,
+    activityId?: number,
+    startDate?: string,
+    endDate?: string,
+  ) {
+    const where: FindOptionsWhere<ActivitySchedule> =
+      {} as FindOptionsWhere<ActivitySchedule>;
     if (petId) where.pet = { id: petId };
     if (activityId) where.activity = { id: activityId };
+
+    if (startDate && endDate) {
+      const start = new Date(startDate + 'T00:00:00');
+      const end = new Date(endDate + 'T23:59:59.999');
+      where.time = Between(start, end);
+    } else if (startDate) {
+      const start = new Date(startDate + 'T00:00:00');
+      where.time = Between(start, new Date('9999-12-31T23:59:59.999'));
+    } else if (endDate) {
+      const end = new Date(endDate + 'T23:59:59.999');
+      where.time = Between(new Date('0001-01-01T00:00:00'), end);
+    }
 
     return await this.activityScheduleRepository.find({
       where,
       relations: ['pet', 'activity'],
     });
+  }
+
+  async findForToday(petId?: number, activityId?: number) {
+    const today = new Date();
+    const jsWeekDay = today.getDay(); // 0 (domingo) - 6 (sábado)
+
+    const qb = this.activityScheduleRepository
+      .createQueryBuilder('schedule')
+      .leftJoinAndSelect('schedule.pet', 'pet')
+      .leftJoinAndSelect('schedule.activity', 'activity')
+      .where(
+        'schedule.weekDay = :weekDay OR schedule.isRecurring = :isRecurring',
+        {
+          weekDay: jsWeekDay,
+          isRecurring: true,
+        },
+      );
+
+    if (petId) {
+      qb.andWhere('pet.id = :petId', { petId });
+    }
+
+    if (activityId) {
+      qb.andWhere('activity.id = :activityId', { activityId });
+    }
+
+    return await qb.getMany();
   }
 
   async findOne(id: number) {
