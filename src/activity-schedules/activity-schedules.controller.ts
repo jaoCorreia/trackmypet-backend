@@ -17,7 +17,6 @@ export class ActivitySchedulesController {
   constructor(private readonly service: ActivitySchedulesService) {}
 
   @Post()
-  //   @UseGuards(OwnerOrAdminGuard)
   async create(@Body() dto: CreateScheduleDto) {
     const schedule = await this.service.create(dto);
     const host = process.env.HOST;
@@ -44,10 +43,12 @@ export class ActivitySchedulesController {
 
   @Get()
   async findAll(
-    @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string,
     @Query('petId') petId?: string,
     @Query('activityId') activityId?: string,
+    @Query('weekDay') weekDay?: number,
+    @Query('isRecurring') isRecurring?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
     @Query('today') today?: string,
   ) {
     if (startDate && isNaN(Date.parse(startDate))) {
@@ -56,7 +57,6 @@ export class ActivitySchedulesController {
     if (endDate && isNaN(Date.parse(endDate))) {
       throw new BadRequestException('Invalid endDate');
     }
-
     const schedules =
       today === 'true'
         ? await this.service.findForToday(
@@ -66,6 +66,8 @@ export class ActivitySchedulesController {
         : await this.service.findAll(
             petId ? Number(petId) : undefined,
             activityId ? Number(activityId) : undefined,
+            weekDay,
+            isRecurring,
             startDate,
             endDate,
           );

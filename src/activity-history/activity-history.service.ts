@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Between, FindOptionsWhere, Repository } from 'typeorm';
 import { ActivityHistory } from 'src/database/entities/activity-history.entity';
 import { ActivitySchedule } from 'src/database/entities/activity-schedule.entity';
 import { CreateActivityHistoryDto, UpdateActivityHistoryDto } from './dto';
@@ -34,32 +34,25 @@ export class ActivityHistoryService {
     startDate?: string,
     endDate?: string,
   ) {
-    const queryBuilder = this.activityHistoryRepository
-      .createQueryBuilder('activityHistory')
-      .leftJoinAndSelect(
-        'activityHistory.activitySchedule',
-        'activitySchedule',
-      );
-
-    if (activityScheduleId) {
-      queryBuilder.andWhere('activitySchedule.id = :activityScheduleId', {
-        activityScheduleId,
-      });
+    const where: FindOptionsWhere<ActivityHistory> =
+      {} as FindOptionsWhere<ActivityHistory>;
+    if (activityScheduleId) where.activitySchedule = { id: activityScheduleId };
+    if (startDate && endDate) {
+      const start = new Date(startDate + 'T00:00:00');
+      const end = new Date(endDate + 'T23:59:59.999');
+      where.createdAt = Between(start, end);
+    } else if (startDate) {
+      const start = new Date(startDate + 'T00:00:00');
+      where.createdAt = Between(start, new Date('9999-12-31T23:59:59.999'));
+    } else if (endDate) {
+      const end = new Date(endDate + 'T23:59:59.999');
+      where.createdAt = Between(new Date('0001-01-01T00:00:00'), end);
     }
 
-    if (startDate) {
-      queryBuilder.andWhere('activityHistory.createdAt >= :startDate', {
-        startDate: new Date(startDate),
-      });
-    }
-
-    if (endDate) {
-      queryBuilder.andWhere('activityHistory.createdAt <= :endDate', {
-        endDate: new Date(endDate),
-      });
-    }
-
-    return await queryBuilder.getMany();
+    return await this.activityHistoryRepository.find({
+      where,
+      relations: ['activitySchedule'],
+    });
   }
 
   async findOne(id: number) {

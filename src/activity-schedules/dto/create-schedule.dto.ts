@@ -3,5 +3,5 @@ export type CreateScheduleDto = {
   time: Date;
   isRecurring: boolean;
   activityId: number;
-  petId: number;
+  petId?: number;
 };

@@ -46,8 +46,9 @@ export class NotificationsScheduler {
         this.logger.log(
           `Successfully sent notification ${notification.id} to user ${notification.user.id}`,
         );
-      } catch (error) {
+      } catch (error: any) {
         this.logger.error(
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           `Failed to send notification ${notification.id}: ${error.message}`,
         );
       }

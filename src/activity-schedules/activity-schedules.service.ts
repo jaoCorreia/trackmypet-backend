@@ -42,13 +42,22 @@ export class ActivitySchedulesService {
   async findAll(
     petId?: number,
     activityId?: number,
+    weekDay?: number,
+    isRecurring?: string,
     startDate?: string,
     endDate?: string,
   ) {
     const where: FindOptionsWhere<ActivitySchedule> =
       {} as FindOptionsWhere<ActivitySchedule>;
+
     if (petId) where.pet = { id: petId };
     if (activityId) where.activity = { id: activityId };
+    if (weekDay) where.weekDay = weekDay;
+    if (isRecurring == 'true') {
+      where.isRecurring = true;
+    } else if (isRecurring == 'false') {
+      where.isRecurring = false;
+    }
 
     if (startDate && endDate) {
       const start = new Date(startDate + 'T00:00:00');
