@@ -111,7 +111,7 @@ export class NotificationsScheduler {
     }
   }
 
-  @Cron('*/15 * * * * *')
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async sendPendingNotifications() {
     if (this.isSendingNotifications) {
       return;
