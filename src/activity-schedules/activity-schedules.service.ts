@@ -94,14 +94,14 @@ export class ActivitySchedulesService {
     }
 
     if (startDate && endDate) {
-      const start = new Date(startDate + 'T00:00:00');
-      const end = new Date(endDate + 'T23:59:59.999');
+      const start = new Date(startDate);
+      const end = new Date(endDate);
       qb.andWhere('schedule.time BETWEEN :start AND :end', { start, end });
     } else if (startDate) {
-      const start = new Date(startDate + 'T00:00:00');
+      const start = new Date(startDate);
       qb.andWhere('schedule.time >= :start', { start });
     } else if (endDate) {
-      const end = new Date(endDate + 'T23:59:59.999');
+      const end = new Date(endDate);
       qb.andWhere('schedule.time <= :end', { end });
     }
 

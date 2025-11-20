@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Notification } from 'src/database/entities/notification.entity';
 import { ActivitySchedule } from 'src/database/entities/activity-schedule.entity';
 import { ActivityHistory } from 'src/database/entities/activity-history.entity';
@@ -218,40 +218,24 @@ export class NotificationsScheduler {
     const pendingSchedules: ActivitySchedule[] = [];
 
     for (const schedule of schedules) {
-      let scheduleHour = 0;
-      let scheduleMinute = 0;
-
       try {
-        const timeValue = schedule.time as string | Date;
-        if (typeof timeValue === 'string') {
-          const timeParts = String(timeValue).split(':');
-          scheduleHour = parseInt(timeParts[0], 10);
-          scheduleMinute = parseInt(timeParts[1], 10);
-        } else {
-          const scheduleTime = new Date(timeValue);
-          scheduleHour = scheduleTime.getUTCHours();
-          scheduleMinute = scheduleTime.getUTCMinutes();
+        const scheduleTime = new Date(schedule.time);
+        const minutesDiff = Math.floor(
+          (scheduleTime.getTime() - now.getTime()) / 1000 / 60,
+        );
+
+        // Buscar atividades nas próximas 24 horas para criar notificações
+        if (minutesDiff >= 0 && minutesDiff <= 1440) {
+          this.logger.debug(
+            `Schedule ${schedule.id} (${schedule.activity.name}) is pending: scheduled at ${scheduleTime.toLocaleString()}, ${minutesDiff} minutes until activity`,
+          );
+          pendingSchedules.push(schedule);
         }
       } catch (error) {
         this.logger.error(
-          `Failed to parse time for schedule ${schedule.id}: ${error}`,
+          `Failed to parse datetime for schedule ${schedule.id}: ${error}`,
         );
         continue;
-      }
-
-      const currentHour = now.getHours();
-      const currentMinute = now.getMinutes();
-
-      const scheduledTimeInMinutes = scheduleHour * 60 + scheduleMinute;
-      const currentTimeInMinutes = currentHour * 60 + currentMinute;
-      const minutesDiff = scheduledTimeInMinutes - currentTimeInMinutes;
-
-      // Notificar até 30 minutos ANTES da atividade
-      if (minutesDiff >= 0 && minutesDiff <= 30) {
-        this.logger.debug(
-          `Schedule ${schedule.id} (${schedule.activity.name}) is pending: scheduled at ${scheduleHour}:${scheduleMinute}, current time ${currentHour}:${currentMinute}, ${minutesDiff} minutes until activity`,
-        );
-        pendingSchedules.push(schedule);
       }
     }
 
@@ -265,13 +249,15 @@ export class NotificationsScheduler {
     const todayEnd = new Date();
     todayEnd.setHours(23, 59, 59, 999);
 
-    const history = await this.activityHistoryRepository.findOne({
-      where: {
-        activitySchedule: { id: scheduleId },
-        status: true,
-        createdAt: Between(todayStart, todayEnd),
-      },
-    });
+    const history = await this.activityHistoryRepository
+      .createQueryBuilder('history')
+      .where('history.activity_schedule_id = :scheduleId', { scheduleId })
+      .andWhere('history.status = :status', { status: true })
+      .andWhere('history.created_at BETWEEN :start AND :end', {
+        start: todayStart,
+        end: todayEnd,
+      })
+      .getOne();
 
     return !!history;
   }
@@ -290,34 +276,18 @@ export class NotificationsScheduler {
 
     const user = (schedule.activity as ActivityWithUser).user!;
 
-    let scheduleHour = 0;
-    let scheduleMinute = 0;
-    try {
-      const timeValue = schedule.time as string | Date;
-      if (typeof timeValue === 'string') {
-        const timeParts = String(timeValue).split(':');
-        scheduleHour = parseInt(timeParts[0], 10);
-        scheduleMinute = parseInt(timeParts[1], 10);
-      } else {
-        const scheduleTime = new Date(timeValue);
-        scheduleHour = scheduleTime.getUTCHours();
-        scheduleMinute = scheduleTime.getUTCMinutes();
-      }
-    } catch (error) {
-      this.logger.error(
-        `Failed to parse time for schedule ${schedule.id}: ${error}`,
-      );
-      return;
-    }
-
-    const timeFormatted = `${scheduleHour.toString().padStart(2, '0')}:${scheduleMinute.toString().padStart(2, '0')}`;
+    const scheduleTime = new Date(schedule.time);
+    const timeFormatted = scheduleTime.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
     const petName = schedule.pet?.name || 'seu pet';
     const notification = await this.notificationsService.create({
       userId: user.id,
       title: `⏰ ${schedule.activity.name}`,
       message: `Não esqueça! ${petName} tem "${schedule.activity.name}" agendado para ${timeFormatted}.`,
-      scheduledAt: new Date(),
+      scheduledAt: scheduleTime,
       activityScheduleId: schedule.id,
     });
 

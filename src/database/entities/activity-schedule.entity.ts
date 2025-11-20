@@ -43,7 +43,7 @@ export class ActivitySchedule {
   })
   weekDays: number[];
 
-  @Column({ type: 'time' })
+  @Column({ type: 'datetime' })
   time: Date;
 
   @Column({ name: 'is_recurring', type: 'tinyint', width: 1, default: 0 })
