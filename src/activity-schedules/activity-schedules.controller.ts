@@ -9,8 +9,15 @@ import {
   Query,
   BadRequestException,
 } from '@nestjs/common';
+import { CurrentUser } from 'src/common/decorator/current-user.decorator';
 import { CreateScheduleDto, UpdateScheduleDto } from './dto';
 import { ActivitySchedulesService } from './activity-schedules.service';
+
+interface JwtPayload {
+  sub: number;
+  email: string;
+  role: string;
+}
 
 @Controller('activity_schedules')
 export class ActivitySchedulesController {
@@ -43,6 +50,7 @@ export class ActivitySchedulesController {
 
   @Get()
   async findAll(
+    @CurrentUser() user: JwtPayload,
     @Query('petId') petId?: string,
     @Query('activityId') activityId?: string,
     @Query('weekDays') weekDays?: string | string[],
@@ -76,11 +84,13 @@ export class ActivitySchedulesController {
       }
     }
 
+    const userId = user.role === 'admin' ? undefined : user.sub;
     const schedules =
       today === 'true'
         ? await this.service.findForToday(
             petId ? Number(petId) : undefined,
             activityId ? Number(activityId) : undefined,
+            userId,
           )
         : await this.service.findAll(
             petId ? Number(petId) : undefined,
@@ -89,6 +99,7 @@ export class ActivitySchedulesController {
             isRecurring,
             startDate,
             endDate,
+            userId,
           );
     const host = process.env.HOST;
     return {

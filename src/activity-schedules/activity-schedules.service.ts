@@ -5,8 +5,6 @@ import { Activity } from 'src/database/entities/activity.entity';
 import { CreateScheduleDto, UpdateScheduleDto } from './dto';
 import { ActivitySchedule } from 'src/database/entities/activity-schedule.entity';
 import { Pet } from 'src/database/entities/pet.entity';
-import { ActivityHistory } from 'src/database/entities/activity-history.entity';
-import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class ActivitySchedulesService {
@@ -19,11 +17,6 @@ export class ActivitySchedulesService {
 
     @InjectRepository(Activity)
     private readonly activityRepository: Repository<Activity>,
-
-    @InjectRepository(ActivityHistory)
-    private readonly activityHistoryRepository: Repository<ActivityHistory>,
-
-    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(dto: CreateScheduleDto) {
@@ -59,11 +52,17 @@ export class ActivitySchedulesService {
     isRecurring?: string,
     startDate?: string,
     endDate?: string,
+    userId?: number,
   ) {
     const qb = this.activityScheduleRepository
       .createQueryBuilder('schedule')
       .leftJoinAndSelect('schedule.pet', 'pet')
-      .leftJoinAndSelect('schedule.activity', 'activity');
+      .leftJoinAndSelect('schedule.activity', 'activity')
+      .leftJoinAndSelect('activity.user', 'activityUser');
+
+    if (userId) {
+      qb.andWhere('activityUser.id = :userId', { userId });
+    }
 
     if (petId) {
       qb.andWhere('pet.id = :petId', { petId });
@@ -109,7 +108,7 @@ export class ActivitySchedulesService {
     return await qb.getMany();
   }
 
-  async findForToday(petId?: number, activityId?: number) {
+  async findForToday(petId?: number, activityId?: number, userId?: number) {
     const today = new Date();
     const jsWeekDay = today.getDay();
 
@@ -117,6 +116,7 @@ export class ActivitySchedulesService {
       .createQueryBuilder('schedule')
       .leftJoinAndSelect('schedule.pet', 'pet')
       .leftJoinAndSelect('schedule.activity', 'activity')
+      .leftJoinAndSelect('activity.user', 'activityUser')
       .where(
         '(JSON_CONTAINS(schedule.week_days, :weekDayJson, "$") = 1 AND schedule.isRecurring = :notRecurring) OR schedule.isRecurring = :isRecurring',
         {
@@ -125,6 +125,10 @@ export class ActivitySchedulesService {
           isRecurring: true,
         },
       );
+
+    if (userId) {
+      qb.andWhere('activityUser.id = :userId', { userId });
+    }
 
     if (petId) {
       qb.andWhere('pet.id = :petId', { petId });

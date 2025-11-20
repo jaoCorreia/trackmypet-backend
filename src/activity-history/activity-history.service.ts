@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, FindOptionsWhere, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ActivityHistory } from 'src/database/entities/activity-history.entity';
 import { ActivitySchedule } from 'src/database/entities/activity-schedule.entity';
 import { CreateActivityHistoryDto, UpdateActivityHistoryDto } from './dto';
@@ -33,26 +33,35 @@ export class ActivityHistoryService {
     activityScheduleId?: number,
     startDate?: string,
     endDate?: string,
+    userId?: number,
   ) {
-    const where: FindOptionsWhere<ActivityHistory> =
-      {} as FindOptionsWhere<ActivityHistory>;
-    if (activityScheduleId) where.activitySchedule = { id: activityScheduleId };
+    const qb = this.activityHistoryRepository
+      .createQueryBuilder('history')
+      .leftJoinAndSelect('history.activitySchedule', 'schedule')
+      .leftJoinAndSelect('schedule.pet', 'pet')
+      .leftJoinAndSelect('pet.user', 'user');
+
+    if (userId) {
+      qb.andWhere('user.id = :userId', { userId });
+    }
+
+    if (activityScheduleId) {
+      qb.andWhere('schedule.id = :activityScheduleId', { activityScheduleId });
+    }
+
     if (startDate && endDate) {
       const start = new Date(startDate + 'T00:00:00');
       const end = new Date(endDate + 'T23:59:59.999');
-      where.createdAt = Between(start, end);
+      qb.andWhere('history.createdAt BETWEEN :start AND :end', { start, end });
     } else if (startDate) {
       const start = new Date(startDate + 'T00:00:00');
-      where.createdAt = Between(start, new Date('9999-12-31T23:59:59.999'));
+      qb.andWhere('history.createdAt >= :start', { start });
     } else if (endDate) {
       const end = new Date(endDate + 'T23:59:59.999');
-      where.createdAt = Between(new Date('0001-01-01T00:00:00'), end);
+      qb.andWhere('history.createdAt <= :end', { end });
     }
 
-    return await this.activityHistoryRepository.find({
-      where,
-      relations: ['activitySchedule'],
-    });
+    return await qb.getMany();
   }
 
   async findOne(id: number) {

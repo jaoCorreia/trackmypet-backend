@@ -9,15 +9,21 @@ import {
   Query,
   BadRequestException,
 } from '@nestjs/common';
+import { CurrentUser } from 'src/common/decorator/current-user.decorator';
 import { CreateActivityHistoryDto, UpdateActivityHistoryDto } from './dto';
 import { ActivityHistoryService } from './activity-history.service';
+
+interface JwtPayload {
+  sub: number;
+  email: string;
+  role: string;
+}
 
 @Controller('activity_history')
 export class ActivityHistoryController {
   constructor(private readonly service: ActivityHistoryService) {}
 
   @Post()
-  //   @UseGuards(OwnerOrAdminGuard)
   async create(@Body() dto: CreateActivityHistoryDto) {
     const history = await this.service.create(dto);
     const host = process.env.HOST;
@@ -40,9 +46,8 @@ export class ActivityHistoryController {
   }
 
   @Get()
-  //   @UseGuards(RolesGuard)
-  //   @Roles(UserRole.ADMIN)
   async findAll(
+    @CurrentUser() user: JwtPayload,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
     @Query('activityScheduleId') activityScheduleId?: string,
@@ -54,10 +59,12 @@ export class ActivityHistoryController {
       throw new BadRequestException('Invalid endDate');
     }
 
+    const userId = user.role === 'admin' ? undefined : user.sub;
     const history = await this.service.findAll(
       activityScheduleId ? Number(activityScheduleId) : undefined,
       startDate,
       endDate,
+      userId,
     );
     const host = process.env.HOST;
     return {
@@ -73,7 +80,6 @@ export class ActivityHistoryController {
   }
 
   @Get(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async findOne(@Param('id') id: string) {
     const history = await this.service.findOne(Number(id));
     const host = process.env.HOST;
@@ -96,7 +102,6 @@ export class ActivityHistoryController {
   }
 
   @Put(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async update(@Param('id') id: string, @Body() dto: UpdateActivityHistoryDto) {
     const history = await this.service.update(Number(id), dto);
     const host = process.env.HOST;
@@ -119,7 +124,6 @@ export class ActivityHistoryController {
   }
 
   @Delete(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async remove(@Param('id') id: string) {
     const history = await this.service.delete(Number(id));
     const host = process.env.HOST;
