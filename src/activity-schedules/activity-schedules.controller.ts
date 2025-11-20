@@ -45,7 +45,7 @@ export class ActivitySchedulesController {
   async findAll(
     @Query('petId') petId?: string,
     @Query('activityId') activityId?: string,
-    @Query('weekDay') weekDay?: number,
+    @Query('weekDays') weekDays?: string | string[],
     @Query('isRecurring') isRecurring?: string,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
@@ -57,6 +57,25 @@ export class ActivitySchedulesController {
     if (endDate && isNaN(Date.parse(endDate))) {
       throw new BadRequestException('Invalid endDate');
     }
+
+    let weekDayArray: number[] | undefined;
+    if (weekDays) {
+      if (Array.isArray(weekDays)) {
+        weekDayArray = weekDays.map((d) => Number(d));
+      } else {
+        try {
+          const parsed: unknown = JSON.parse(weekDays);
+          if (Array.isArray(parsed)) {
+            weekDayArray = parsed.map((d) => Number(d));
+          } else {
+            weekDayArray = [Number(weekDays)];
+          }
+        } catch {
+          weekDayArray = [Number(weekDays)];
+        }
+      }
+    }
+
     const schedules =
       today === 'true'
         ? await this.service.findForToday(
@@ -66,7 +85,7 @@ export class ActivitySchedulesController {
         : await this.service.findAll(
             petId ? Number(petId) : undefined,
             activityId ? Number(activityId) : undefined,
-            weekDay,
+            weekDayArray,
             isRecurring,
             startDate,
             endDate,
@@ -85,7 +104,6 @@ export class ActivitySchedulesController {
   }
 
   @Get(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async findOne(@Param('id') id: string) {
     const schedule = await this.service.findOne(Number(id));
     const host = process.env.HOST;
@@ -111,7 +129,6 @@ export class ActivitySchedulesController {
   }
 
   @Put(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async update(@Param('id') id: string, @Body() dto: UpdateScheduleDto) {
     const schedule = await this.service.update(Number(id), dto);
     const host = process.env.HOST;
@@ -137,7 +154,6 @@ export class ActivitySchedulesController {
   }
 
   @Delete(':id')
-  //   @UseGuards(OwnerOrAdminGuard)
   async remove(@Param('id') id: string) {
     const schedule = await this.service.delete(Number(id));
     const host = process.env.HOST;

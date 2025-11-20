@@ -4,6 +4,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { JwtAuthMiddleware } from 'src/common/middleware/jwt-auth.middleware';
 import { Notification } from 'src/database/entities/notification.entity';
 import { User } from 'src/database/entities/user.entity';
+import { ActivitySchedule } from 'src/database/entities/activity-schedule.entity';
+import { ActivityHistory } from 'src/database/entities/activity-history.entity';
+import { Pet } from 'src/database/entities/pet.entity';
 import { UsersModule } from 'src/users/users.module';
 import { FirebaseModule } from 'src/firebase/firebase.module';
 import { NotificationsController } from './notifications.controller';
@@ -12,7 +15,13 @@ import { NotificationsScheduler } from './notifications.scheduler';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Notification, User]),
+    TypeOrmModule.forFeature([
+      Notification,
+      User,
+      ActivitySchedule,
+      ActivityHistory,
+      Pet,
+    ]),
     ScheduleModule.forRoot(),
     UsersModule,
     FirebaseModule,

@@ -4,12 +4,11 @@ import {
   DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
   ManyToOne,
-  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { ActivitySchedule } from './activity-schedule.entity';
 
 @Entity({ name: 'notifications' })
 export class Notification {
@@ -43,4 +42,11 @@ export class Notification {
   })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @ManyToOne(() => ActivitySchedule, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'activity_schedule_id' })
+  activitySchedule?: ActivitySchedule;
 }

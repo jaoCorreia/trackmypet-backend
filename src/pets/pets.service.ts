@@ -44,19 +44,34 @@ export class PetsService {
   }
 
   async findAll(name?: string, userId?: number, breedId?: number) {
-    const where: any = {};
-    if (name) where.name = () => `LOWER(name) LIKE LOWER('%${name}%')`;
-    if (userId) where.user = { id: userId };
-    if (breedId) where.breed = { id: breedId };
+    const qb = this.petRepository
+      .createQueryBuilder('pet')
+      .leftJoinAndSelect('pet.user', 'user')
+      .leftJoinAndSelect('pet.breed', 'breed')
+      .leftJoinAndSelect('breed.specie', 'specie');
 
-    return await this.petRepository.find({
-      where,
-      relations: ['user', 'breed'],
-    });
+    if (name) {
+      qb.andWhere('LOWER(pet.name) LIKE LOWER(:name)', {
+        name: `%${name}%`,
+      });
+    }
+
+    if (userId) {
+      qb.andWhere('user.id = :userId', { userId });
+    }
+
+    if (breedId) {
+      qb.andWhere('breed.id = :breedId', { breedId });
+    }
+
+    return await qb.getMany();
   }
 
   async findOne(id: number) {
-    const pet = await this.petRepository.findOne({ where: { id } });
+    const pet = await this.petRepository.findOne({
+      where: { id },
+      relations: ['user', 'breed', 'breed.species'],
+    });
     if (!pet) throw new NotFoundException('Pet not found');
     return pet;
   }

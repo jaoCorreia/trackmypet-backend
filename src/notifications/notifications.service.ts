@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -24,6 +25,11 @@ export class NotificationsService {
     });
     if (!user) throw new NotFoundException('User not found');
 
+    let activitySchedule = undefined;
+    if (dto.activityScheduleId) {
+      activitySchedule = { id: dto.activityScheduleId } as any;
+    }
+
     const notification = this.notificationRepository.create({
       title: dto.title,
       message: dto.message,
@@ -31,6 +37,7 @@ export class NotificationsService {
       sentAt: dto.sentAt,
       readAt: dto.readAt,
       user,
+      activitySchedule,
     });
 
     const savedNotification =
@@ -50,7 +57,7 @@ export class NotificationsService {
 
     if (notification.sentAt) {
       this.logger.warn(
-        `Notification ${notificationId} was already sent at ${notification.sentAt}`,
+        `Notification ${notificationId} was already sent at ${notification.sentAt?.toISOString()}`,
       );
       return notification;
     }
@@ -59,7 +66,7 @@ export class NotificationsService {
 
     if ((user as any).deviceToken) {
       try {
-        const deviceToken = (user as any).deviceToken;
+        const deviceToken = String((user as any).deviceToken);
         await this.firebaseService.sendPushNotification(
           deviceToken,
           notification.title,
@@ -92,7 +99,7 @@ export class NotificationsService {
   }
 
   async findAll(userId?: number) {
-    const where: any = {};
+    const where: Partial<{ user: { id: number } }> = {};
     if (userId) where.user = { id: userId };
 
     return await this.notificationRepository.find({

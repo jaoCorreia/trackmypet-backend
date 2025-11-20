@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository, Between, FindOptionsWhere } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Activity } from 'src/database/entities/activity.entity';
 import { CreateScheduleDto, UpdateScheduleDto } from './dto';
 import { ActivitySchedule } from 'src/database/entities/activity-schedule.entity';
 import { Pet } from 'src/database/entities/pet.entity';
+import { ActivityHistory } from 'src/database/entities/activity-history.entity';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class ActivitySchedulesService {
@@ -17,11 +19,22 @@ export class ActivitySchedulesService {
 
     @InjectRepository(Activity)
     private readonly activityRepository: Repository<Activity>,
+
+    @InjectRepository(ActivityHistory)
+    private readonly activityHistoryRepository: Repository<ActivityHistory>,
+
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(dto: CreateScheduleDto) {
-    const pet = await this.petRepository.findOne({ where: { id: dto.petId } });
-    if (!pet) throw new NotFoundException('Pet not found');
+    let pet: Pet | undefined = undefined;
+    if (dto.petId) {
+      const foundPet = await this.petRepository.findOne({
+        where: { id: dto.petId },
+      });
+      if (!foundPet) throw new NotFoundException('Pet not found');
+      pet = foundPet;
+    }
 
     const activity = await this.activityRepository.findOne({
       where: { id: dto.activityId },
@@ -29,7 +42,7 @@ export class ActivitySchedulesService {
     if (!activity) throw new NotFoundException('Activity not found');
 
     const activitySchedule = this.activityScheduleRepository.create({
-      weekDay: dto.weekDay,
+      weekDays: dto.weekDays,
       time: dto.time,
       isRecurring: dto.isRecurring,
       activity,
@@ -42,53 +55,73 @@ export class ActivitySchedulesService {
   async findAll(
     petId?: number,
     activityId?: number,
-    weekDay?: number,
+    weekDay?: number[],
     isRecurring?: string,
     startDate?: string,
     endDate?: string,
   ) {
-    const where: FindOptionsWhere<ActivitySchedule> =
-      {} as FindOptionsWhere<ActivitySchedule>;
+    const qb = this.activityScheduleRepository
+      .createQueryBuilder('schedule')
+      .leftJoinAndSelect('schedule.pet', 'pet')
+      .leftJoinAndSelect('schedule.activity', 'activity');
 
-    if (petId) where.pet = { id: petId };
-    if (activityId) where.activity = { id: activityId };
-    if (weekDay) where.weekDay = weekDay;
-    if (isRecurring == 'true') {
-      where.isRecurring = true;
-    } else if (isRecurring == 'false') {
-      where.isRecurring = false;
+    if (petId) {
+      qb.andWhere('pet.id = :petId', { petId });
+    }
+
+    if (activityId) {
+      qb.andWhere('activity.id = :activityId', { activityId });
+    }
+
+    if (weekDay && weekDay.length > 0) {
+      const dayConds: string[] = [];
+      const params: Record<string, string> = {};
+
+      weekDay.forEach((d, i) => {
+        const key = `day${i}`;
+        dayConds.push(`JSON_CONTAINS(schedule.week_days, :${key}, '$') = 1`);
+        params[key] = JSON.stringify(d);
+      });
+
+      qb.andWhere(`(${dayConds.join(' OR ')})`, params);
+    }
+
+    if (isRecurring === 'true') {
+      qb.andWhere('schedule.isRecurring = :isRecurring', { isRecurring: true });
+    } else if (isRecurring === 'false') {
+      qb.andWhere('schedule.isRecurring = :isRecurring', {
+        isRecurring: false,
+      });
     }
 
     if (startDate && endDate) {
       const start = new Date(startDate + 'T00:00:00');
       const end = new Date(endDate + 'T23:59:59.999');
-      where.time = Between(start, end);
+      qb.andWhere('schedule.time BETWEEN :start AND :end', { start, end });
     } else if (startDate) {
       const start = new Date(startDate + 'T00:00:00');
-      where.time = Between(start, new Date('9999-12-31T23:59:59.999'));
+      qb.andWhere('schedule.time >= :start', { start });
     } else if (endDate) {
       const end = new Date(endDate + 'T23:59:59.999');
-      where.time = Between(new Date('0001-01-01T00:00:00'), end);
+      qb.andWhere('schedule.time <= :end', { end });
     }
 
-    return await this.activityScheduleRepository.find({
-      where,
-      relations: ['pet', 'activity'],
-    });
+    return await qb.getMany();
   }
 
   async findForToday(petId?: number, activityId?: number) {
     const today = new Date();
-    const jsWeekDay = today.getDay(); // 0 (domingo) - 6 (sábado)
+    const jsWeekDay = today.getDay();
 
     const qb = this.activityScheduleRepository
       .createQueryBuilder('schedule')
       .leftJoinAndSelect('schedule.pet', 'pet')
       .leftJoinAndSelect('schedule.activity', 'activity')
       .where(
-        'schedule.weekDay = :weekDay OR schedule.isRecurring = :isRecurring',
+        '(JSON_CONTAINS(schedule.week_days, :weekDayJson, "$") = 1 AND schedule.isRecurring = :notRecurring) OR schedule.isRecurring = :isRecurring',
         {
-          weekDay: jsWeekDay,
+          weekDayJson: JSON.stringify(jsWeekDay),
+          notRecurring: false,
           isRecurring: true,
         },
       );
@@ -107,6 +140,7 @@ export class ActivitySchedulesService {
   async findOne(id: number) {
     const activitySchedule = await this.activityScheduleRepository.findOne({
       where: { id },
+      relations: ['pet', 'activity'],
     });
     if (!activitySchedule)
       throw new NotFoundException('Activity Schedule not found');

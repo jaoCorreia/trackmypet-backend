@@ -1,5 +1,5 @@
 export type CreateScheduleDto = {
-  weekDay: number;
+  weekDays: number[];
   time: Date;
   isRecurring: boolean;
   activityId: number;

@@ -1,5 +1,5 @@
 export type UpdateScheduleDto = {
-  weekDay?: number;
+  weekDays?: number[];
   time?: Date;
   isRecurring?: boolean;
   activityId?: number;

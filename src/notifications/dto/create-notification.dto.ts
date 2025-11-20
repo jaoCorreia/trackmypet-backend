@@ -5,5 +5,5 @@ export type CreateNotificationDto = {
   sentAt?: Date;
   readAt?: Date;
   userId: number;
-}
-
+  activityScheduleId?: number;
+};

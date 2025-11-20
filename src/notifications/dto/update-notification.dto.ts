@@ -5,4 +5,5 @@ export type UpdateNotificationDto = {
   sentAt?: Date;
   readAt?: Date;
   userId?: number;
-}
+  activityScheduleId?: number;
+};

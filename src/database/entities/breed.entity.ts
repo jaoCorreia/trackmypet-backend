@@ -7,7 +7,6 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
-  RelationId,
   OneToMany,
 } from 'typeorm';
 import { Specie } from './specie.entity';
