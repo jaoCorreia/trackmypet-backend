@@ -29,7 +29,7 @@ export class NotificationsScheduler {
     private readonly firebaseService: FirebaseService,
   ) {}
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async handleScheduledNotifications() {
     if (this.isProcessingNotifications) {
       return;
@@ -43,8 +43,13 @@ export class NotificationsScheduler {
       const pendingSchedules = await this.getPendingSchedulesForNotification();
 
       if (pendingSchedules.length === 0) {
+        this.logger.debug('No pending schedules found for notification');
         return;
       }
+
+      this.logger.log(
+        `Found ${pendingSchedules.length} pending schedule(s) for notification`,
+      );
 
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
@@ -198,8 +203,8 @@ export class NotificationsScheduler {
     const schedules = await this.activityScheduleRepository
       .createQueryBuilder('schedule')
       .leftJoinAndSelect('schedule.pet', 'pet')
-      .leftJoinAndSelect('pet.user', 'user')
       .leftJoinAndSelect('schedule.activity', 'activity')
+      .leftJoinAndSelect('activity.user', 'activityUser')
       .where(
         '(JSON_CONTAINS(schedule.week_days, :weekDayJson, "$") = 1 AND schedule.isRecurring = :notRecurring) OR schedule.isRecurring = :isRecurring',
         {
@@ -239,9 +244,13 @@ export class NotificationsScheduler {
 
       const scheduledTimeInMinutes = scheduleHour * 60 + scheduleMinute;
       const currentTimeInMinutes = currentHour * 60 + currentMinute;
-      const minutesDiff = currentTimeInMinutes - scheduledTimeInMinutes;
+      const minutesDiff = scheduledTimeInMinutes - currentTimeInMinutes;
 
+      // Notificar até 30 minutos ANTES da atividade
       if (minutesDiff >= 0 && minutesDiff <= 30) {
+        this.logger.debug(
+          `Schedule ${schedule.id} (${schedule.activity.name}) is pending: scheduled at ${scheduleHour}:${scheduleMinute}, current time ${currentHour}:${currentMinute}, ${minutesDiff} minutes until activity`,
+        );
         pendingSchedules.push(schedule);
       }
     }
@@ -268,20 +277,18 @@ export class NotificationsScheduler {
   }
 
   private async createNotification(schedule: ActivitySchedule): Promise<void> {
-    if (!schedule.pet) {
+    interface ActivityWithUser {
+      user?: { id: number };
+    }
+
+    if (!schedule.activity || !(schedule.activity as ActivityWithUser).user) {
+      this.logger.warn(
+        `Schedule ${schedule.id} has no activity or activity has no user`,
+      );
       return;
     }
 
-    const petWithUser = await this.petRepository.findOne({
-      where: { id: schedule.pet.id },
-      relations: ['user'],
-    });
-
-    if (!petWithUser || !petWithUser.user) {
-      return;
-    }
-
-    const user = petWithUser.user;
+    const user = (schedule.activity as ActivityWithUser).user!;
 
     let scheduleHour = 0;
     let scheduleMinute = 0;
@@ -305,12 +312,17 @@ export class NotificationsScheduler {
 
     const timeFormatted = `${scheduleHour.toString().padStart(2, '0')}:${scheduleMinute.toString().padStart(2, '0')}`;
 
-    await this.notificationsService.create({
+    const petName = schedule.pet?.name || 'seu pet';
+    const notification = await this.notificationsService.create({
       userId: user.id,
       title: `⏰ ${schedule.activity.name}`,
-      message: `Não esqueça! ${schedule.pet.name} tem "${schedule.activity.name}" agendado para ${timeFormatted}.`,
+      message: `Não esqueça! ${petName} tem "${schedule.activity.name}" agendado para ${timeFormatted}.`,
       scheduledAt: new Date(),
       activityScheduleId: schedule.id,
     });
+
+    this.logger.log(
+      `Notification ${notification.id} created for user ${user.id} - Activity: ${schedule.activity.name} at ${timeFormatted}`,
+    );
   }
 }

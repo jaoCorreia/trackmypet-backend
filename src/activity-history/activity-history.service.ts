@@ -39,10 +39,11 @@ export class ActivityHistoryService {
       .createQueryBuilder('history')
       .leftJoinAndSelect('history.activitySchedule', 'schedule')
       .leftJoinAndSelect('schedule.pet', 'pet')
-      .leftJoinAndSelect('pet.user', 'user');
+      .leftJoinAndSelect('schedule.activity', 'activity')
+      .leftJoinAndSelect('activity.user', 'activityUser');
 
     if (userId) {
-      qb.andWhere('user.id = :userId', { userId });
+      qb.andWhere('activityUser.id = :userId', { userId });
     }
 
     if (activityScheduleId) {

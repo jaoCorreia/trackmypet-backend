@@ -7,8 +7,15 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { CurrentUser } from 'src/common/decorator/current-user.decorator';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto, UpdateNotificationDto } from './dto';
+
+interface JwtPayload {
+  sub: number;
+  email: string;
+  role: string;
+}
 
 @Controller('notifications')
 export class NotificationsController {
@@ -41,10 +48,9 @@ export class NotificationsController {
   }
 
   @Get()
-  //   @UseGuards(RolesGuard)
-  //   @Roles(UserRole.ADMIN)
-  async findAll() {
-    const notifications = await this.service.findAll();
+  async findAll(@CurrentUser() user: JwtPayload) {
+    const userId = user.role === 'admin' ? undefined : user.sub;
+    const notifications = await this.service.findAll(userId);
     const host = process.env.HOST;
     return {
       data: notifications,
