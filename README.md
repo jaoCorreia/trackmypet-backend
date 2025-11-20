@@ -1,98 +1,267 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# TrackMyPet Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST desenvolvida com NestJS para gerenciamento de pets e suas atividades.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📋 Pré-requisitos
 
-## Description
+- Node.js (v16 ou superior)
+- MySQL (v8 ou superior)
+- Conta Firebase (para notificações push)
+- Conta AWS S3 (para armazenamento de arquivos)
+- Conta de email SMTP (para envio de emails)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🚀 Instalação
 
-## Project setup
+### 1. Clonar o repositório
 
 ```bash
-$ npm install
+git clone <repository-url>
+cd trackmypet-backend
 ```
 
-## Compile and run the project
+### 2. Instalar dependências
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+### 3. Configurar variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+
+```env
+# Database
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASS=your_password
+DB_NAME=trackmypet
+
+# JWT
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=7d
+
+# Email
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USER=your_email@gmail.com
+MAIL_PASS=your_app_password
+MAIL_FROM=TrackMyPet <your_email@gmail.com>
+
+# AWS S3
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_S3_BUCKET_NAME=your_bucket_name
+
+# Firebase (deixe vazio se não usar notificações push)
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_CLIENT_EMAIL=your_client_email
+FIREBASE_PRIVATE_KEY="your_private_key"
+```
+
+### 4. Configurar Firebase (Opcional)
+
+Se você deseja usar notificações push:
+
+1. Acesse o [Firebase Console](https://console.firebase.google.com/)
+2. Crie um novo projeto ou selecione um existente
+3. Vá em **Project Settings** > **Service Accounts**
+4. Clique em **Generate New Private Key**
+5. Salve o arquivo JSON baixado como `keys/firebase-service-account.json`
+
+Alternativamente, você pode adicionar as credenciais no arquivo `.env`:
+
+- `FIREBASE_PROJECT_ID`: ID do projeto Firebase
+- `FIREBASE_CLIENT_EMAIL`: Email da service account
+- `FIREBASE_PRIVATE_KEY`: Chave privada (mantenha as aspas e quebras de linha)
+
+### 5. Criar o banco de dados
 
 ```bash
-# unit tests
-$ npm run test
+# Acesse o MySQL
+mysql -u root -p
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+# Crie o banco de dados
+CREATE DATABASE trackmypet CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+EXIT;
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 6. Executar migrations
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Sincronizar entidades com o banco (desenvolvimento)
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+> **Nota**: O TypeORM está configurado com `synchronize: true` em desenvolvimento, o que cria automaticamente as tabelas.
 
-## Resources
+### 7. Popular o banco com dados iniciais (Seeds)
 
-Check out a few resources that may come in handy when working with NestJS:
+Execute o comando para criar dados iniciais:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+npm run seed
+```
 
-## Support
+Este comando irá:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- ✅ Criar usuário administrador padrão
+- ✅ Popular espécies de animais (Cachorro, Gato, etc.)
+- ✅ Popular raças para cada espécie
 
-## Stay in touch
+**Credenciais do Admin:**
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- **Email**: admin@trackmypet.com
+- **Senha**: Admin@123
 
-## License
+## 🏃 Executar o projeto
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+# Modo desenvolvimento
+npm run start:dev
+
+# Modo produção
+npm run build
+npm run start:prod
+
+# Modo debug
+npm run start:debug
+```
+
+A API estará disponível em `http://localhost:3000`
+
+## 📚 Documentação da API
+
+### Autenticação
+
+Todas as rotas (exceto login e registro) requerem um token JWT no header:
+
+```
+Authorization: Bearer <seu_token>
+```
+
+### Principais Endpoints
+
+#### Auth
+
+- `POST /auth/register` - Criar nova conta
+- `POST /auth/login` - Fazer login
+- `POST /auth/verify-code` - Verificar código de email
+
+#### Usuários
+
+- `GET /users` - Listar usuários
+- `GET /users/:id` - Buscar usuário
+- `PUT /users/:id` - Atualizar usuário
+- `DELETE /users/:id` - Deletar usuário
+
+#### Pets
+
+- `GET /pets` - Listar pets do usuário
+- `POST /pets` - Criar pet
+- `PUT /pets/:id` - Atualizar pet
+- `DELETE /pets/:id` - Deletar pet
+
+#### Atividades
+
+- `GET /activities` - Listar atividades do usuário
+- `POST /activities` - Criar atividade personalizada
+- `PUT /activities/:id` - Atualizar atividade
+- `DELETE /activities/:id` - Deletar atividade
+
+#### Agendamentos
+
+- `GET /activity_schedules` - Listar agendamentos
+- `GET /activity_schedules/today` - Atividades de hoje
+- `POST /activity_schedules` - Criar agendamento
+- `PUT /activity_schedules/:id` - Atualizar agendamento
+- `DELETE /activity_schedules/:id` - Deletar agendamento
+
+#### Histórico
+
+- `GET /activity_history` - Listar histórico de atividades
+- `POST /activity_history` - Registrar atividade completada
+- `PUT /activity_history/:id` - Atualizar registro
+- `DELETE /activity_history/:id` - Deletar registro
+
+#### Notificações
+
+- `GET /notifications` - Listar notificações
+- `PUT /notifications/:id/read` - Marcar como lida
+
+## 🧪 Testes
+
+```bash
+# Testes unitários
+npm run test
+
+# Testes e2e
+npm run test:e2e
+
+# Cobertura de testes
+npm run test:cov
+```
+
+## 🔒 Permissões
+
+O sistema possui dois níveis de acesso:
+
+### Admin
+
+- Acesso total a todos os recursos
+- Pode ver dados de todos os usuários
+
+### Usuário Regular
+
+- Acesso apenas aos próprios pets, atividades e agendamentos
+- Não pode ver dados de outros usuários
+
+## 📦 Estrutura do Projeto
+
+```
+src/
+├── auth/                 # Autenticação JWT
+├── users/                # Gerenciamento de usuários
+├── pets/                 # Gerenciamento de pets
+├── activities/           # Atividades customizadas
+├── activity-schedules/   # Agendamento de atividades
+├── activity-history/     # Histórico de completude
+├── notifications/        # Sistema de notificações
+├── firebase/             # Integração Firebase
+├── s3/                   # Upload de arquivos S3
+├── email/                # Envio de emails
+├── database/
+│   ├── entities/         # Entidades TypeORM
+│   └── seeds/            # Seeds do banco
+└── common/               # Guards, decorators, middlewares
+```
+
+## 🔄 Sistema de Notificações
+
+O backend possui um scheduler automático que:
+
+1. **A cada 30 segundos**: Verifica atividades agendadas para os próximos 30 minutos
+2. **A cada 15 segundos**: Envia notificações pendentes via Firebase Cloud Messaging
+3. **Prevenção de duplicatas**: Sistema triplo de proteção contra notificações duplicadas
+
+Para que as notificações funcionem, o app mobile precisa:
+
+- Estar configurado com Firebase
+- Enviar o FCM token ao fazer login
+- Ter permissões de notificação habilitadas
+
+## 🛠️ Scripts Disponíveis
+
+```bash
+npm run start:dev        # Inicia em modo desenvolvimento
+npm run start:prod       # Inicia em modo produção
+npm run seed             # Executa seeds do banco
+npm run format           # Formata código com Prettier
+npm run lint             # Verifica erros com ESLint
+npm run test             # Executa testes
+```
+
+## 📝 Licença
+
+Este projeto está sob licença privada.
