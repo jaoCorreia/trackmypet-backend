@@ -69,7 +69,7 @@ CREATE TABLE `activity_schedules` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `activity_id` int(11) NOT NULL,
   `pet_id` int(11) NOT NULL,
-  `week_days` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`week_days`)),
+  `week_days` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `time` datetime DEFAULT NULL,
   `is_recurring` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
