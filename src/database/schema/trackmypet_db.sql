@@ -68,7 +68,7 @@ DROP TABLE IF EXISTS `activity_schedules`;
 CREATE TABLE `activity_schedules` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `activity_id` int(11) NOT NULL,
-  `pet_id` int(11) NOT NULL,
+  `pet_id` int(11) DEFAULT NULL,
   `week_days` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `time` datetime DEFAULT NULL,
   `is_recurring` tinyint(1) NOT NULL DEFAULT 1,
@@ -79,7 +79,7 @@ CREATE TABLE `activity_schedules` (
   KEY `fk_activity_schedules_activities` (`activity_id`),
   KEY `fk_activity_schedules_pets` (`pet_id`),
   CONSTRAINT `fk_activity_schedules_activities` FOREIGN KEY (`activity_id`) REFERENCES `activities` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_activity_schedules_pets` FOREIGN KEY (`pet_id`) REFERENCES `pets` (`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_activity_schedules_pets` FOREIGN KEY (`pet_id`) REFERENCES `pets` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
