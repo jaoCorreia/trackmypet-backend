@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 import { seedAdmin } from './admin.seed';
 import { seedSpecies } from './species.seed';
 import { seedBreeds } from './breeds.seed';
+import { seedFileCategories } from './file-categories.seed';
 
 // Carregar variáveis de ambiente
 config();
@@ -31,6 +32,7 @@ async function runSeeds() {
     await seedAdmin(AppDataSource);
     await seedSpecies(AppDataSource);
     await seedBreeds(AppDataSource);
+    await seedFileCategories(AppDataSource);
 
     console.log('\n🎉 Seeding completed successfully!');
     await AppDataSource.destroy();

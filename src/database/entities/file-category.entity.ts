@@ -30,11 +30,11 @@ export class FileCategory {
   deletedAt?: Date;
 
   @ManyToOne(() => User, (user) => user.file_categories, {
-    nullable: false,
+    nullable: true,
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user?: User;
 
   @OneToMany(() => File, (file) => file.fileCategory)
   files?: File[];
