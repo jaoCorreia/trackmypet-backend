@@ -76,27 +76,46 @@ Alternativamente, você pode adicionar as credenciais no arquivo `.env`:
 - `FIREBASE_CLIENT_EMAIL`: Email da service account
 - `FIREBASE_PRIVATE_KEY`: Chave privada (mantenha as aspas e quebras de linha)
 
-### 5. Criar o banco de dados
+### 5. Criar e configurar o banco de dados
+
+#### Opção 1: Executar script SQL completo (Recomendado)
+
+Execute o script SQL que cria o banco de dados, tabelas e estrutura completa:
 
 ```bash
 # Acesse o MySQL
 mysql -u root -p
 
-# Crie o banco de dados
-CREATE DATABASE trackmypet CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-EXIT;
+# Execute o script SQL
+source src/database/schema/trackmypet_db.sql
+
+# Ou se preferir, copie e cole o conteúdo do arquivo no MySQL
 ```
 
-### 6. Executar migrations
+O script `src/database/schema/trackmypet_db.sql` contém:
+
+- Criação do banco de dados
+- Todas as tabelas com suas estruturas
+- Chaves estrangeiras e relacionamentos
+- Índices para otimização
+
+#### Opção 2: Criar banco vazio e usar TypeORM (Desenvolvimento)
 
 ```bash
-# Sincronizar entidades com o banco (desenvolvimento)
+# Acesse o MySQL
+mysql -u root -p
+
+# Crie apenas o banco de dados
+CREATE DATABASE trackmypet CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+EXIT;
+
+# Inicie a aplicação para o TypeORM criar as tabelas
 npm run start:dev
 ```
 
-> **Nota**: O TypeORM está configurado com `synchronize: true` em desenvolvimento, o que cria automaticamente as tabelas.
+> **Nota**: Em desenvolvimento, o TypeORM está configurado com `synchronize: true`, o que cria automaticamente as tabelas. Em produção, sempre use o script SQL.
 
-### 7. Popular o banco com dados iniciais (Seeds)
+### 6. Popular o banco com dados iniciais (Seeds)
 
 Execute o comando para criar dados iniciais:
 
