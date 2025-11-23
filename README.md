@@ -30,39 +30,56 @@ npm install
 Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 
 ```env
-# Database
+# SERVER
+HOST=http://localhost:9000/api/v1
+PORT=9000
+
+# DATABASE CONFIG
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
 DB_PASS=your_password
 DB_NAME=trackmypet
 
-# JWT
-JWT_SECRET=your_jwt_secret_key
-JWT_EXPIRES_IN=7d
+# AUTHENTICATION
+# Execute: node generate-keys.js
+# As chaves serão salvas em keys/private.pem e keys/public.pem
+JWT_PRIVATE_KEY_PATH='./keys/private.pem'
+JWT_PUBLIC_KEY_PATH='./keys/public.pem'
 
-# Email
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USER=your_email@gmail.com
-MAIL_PASS=your_app_password
-MAIL_FROM=TrackMyPet <your_email@gmail.com>
-
-# AWS S3
-AWS_REGION=us-east-1
+# AWS
+AWS_REGION=sa-east-1
+AWS_S3_BUCKET_NAME=trackmypet-storage
 AWS_ACCESS_KEY_ID=your_aws_access_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret_key
-AWS_S3_BUCKET_NAME=your_bucket_name
 
-# Firebase (deixe vazio se não usar notificações push)
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_CLIENT_EMAIL=your_client_email
-FIREBASE_PRIVATE_KEY="your_private_key"
+# FIREBASE ADMIN SDK (Backend - Service Account)
+FIREBASE_SERVICE_ACCOUNT_PATH=./keys/firebase-service-account.json
+
+# EMAIL CONFIG
+MAIL_HOST=smtp.hostinger.com
+MAIL_PORT=587
+MAIL_USER=admin@trackmypet.com.br
+MAIL_PASSWORD=your_mail_password
+MAIL_FROM_NAME=TrackMyPet
+MAIL_FROM_EMAIL=admin@trackmypet.com.br
 ```
 
-### 4. Configurar Firebase (Opcional)
+### 4. Gerar chaves JWT
 
-Se você deseja usar notificações push:
+O sistema usa autenticação RSA para JWT. Execute o script para gerar as chaves:
+
+```bash
+node generate-keys.js
+```
+
+Este comando criará:
+- `keys/private.pem` - Chave privada para assinar tokens
+- `keys/public.pem` - Chave pública para verificar tokens
+
+### 5. Configurar Firebase (Obrigatório para notificações push)
+
+Para ativar as notificações push:
 
 1. Acesse o [Firebase Console](https://console.firebase.google.com/)
 2. Crie um novo projeto ou selecione um existente
@@ -70,13 +87,7 @@ Se você deseja usar notificações push:
 4. Clique em **Generate New Private Key**
 5. Salve o arquivo JSON baixado como `keys/firebase-service-account.json`
 
-Alternativamente, você pode adicionar as credenciais no arquivo `.env`:
-
-- `FIREBASE_PROJECT_ID`: ID do projeto Firebase
-- `FIREBASE_CLIENT_EMAIL`: Email da service account
-- `FIREBASE_PRIVATE_KEY`: Chave privada (mantenha as aspas e quebras de linha)
-
-### 5. Criar e configurar o banco de dados
+### 6. Criar e configurar o banco de dados
 
 #### Opção 1: Executar script SQL completo (Recomendado)
 
@@ -115,7 +126,7 @@ npm run start:dev
 
 > **Nota**: Em desenvolvimento, o TypeORM está configurado com `synchronize: true`, o que cria automaticamente as tabelas. Em produção, sempre use o script SQL.
 
-### 6. Popular o banco com dados iniciais (Seeds)
+### 7. Popular o banco com dados iniciais (Seeds)
 
 Execute o comando para criar dados iniciais:
 
@@ -148,7 +159,7 @@ npm run start:prod
 npm run start:debug
 ```
 
-A API estará disponível em `http://localhost:3000`
+A API estará disponível em `http://localhost:9000/api/v1`
 
 ## 📚 Documentação da API
 
