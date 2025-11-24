@@ -12,23 +12,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Add SSH key (.pem)
+      - name: Add SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_PEM_KEY }}" > ~/.ssh/trackmypet-backend.pem
-          chmod 600 ~/.ssh/trackmypet-backend.pem
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: Disable host key checking
         run: |
-          echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+          echo -e "Host *\n    StrictHostKeyChecking no\n" >> ~/.ssh/config
 
       - name: Deploy to EC2
         run: |
-          ssh -i ~/.ssh/trackmypet-backend.pem \
-            "${{ secrets.EC2_SSH_TARGET }}" "
-              cd trackmypet-backend &&
-              git pull origin main &&
-              npm ci &&
-              npm run build &&
-              sudo systemctl restart nest
-            "
+          ssh ec2-user@ec2-18-230-213-54.sa-east-1.compute.amazonaws.com "
+            cd trackmypet-backend &&
+            git pull origin main &&
+            rm -rf node_modules &&
+            npm ci &&
+            npm run build &&
+            sudo systemctl restart nest
+          "
