@@ -1,0 +1,30 @@
+name: Deploy automático TrackMyPet Backend
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Configurar SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_actions
+          chmod 600 ~/.ssh/id_actions
+          echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+
+      - name: Fazer deploy via SSH
+        run: |
+          ssh -i ~/.ssh/id_actions ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          cd ${{ secrets.EC2_PROJECT_PATH }}
+          git pull
+          npm ci
+          npm run build
+          sudo systemctl restart nest
+          EOF
