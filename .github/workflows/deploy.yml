@@ -24,11 +24,11 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh ec2-user@ec2-18-230-213-54.sa-east-1.compute.amazonaws.com "
-            cd trackmypet-backend &&
-            git pull origin main &&
-            rm -rf node_modules &&
-            npm ci &&
-            npm run build &&
+          ssh ec2-user@ec2-18-230-213-54.sa-east-1.compute.amazonaws.com << 'EOF'
+            cd trackmypet-backend
+            git pull origin main
+            rm -rf node_modules
+            npm ci
+            npm run build
             sudo systemctl restart nest
-          "
+          EOF
