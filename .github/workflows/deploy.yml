@@ -24,4 +24,4 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh ${{ secrets.EC2_SSH_TARGET }} "cd trackmypet-backend && git pull origin main && rm -rf node_modules && npm ci && npm run build && sudo systemctl restart nest"
+          ssh ec2-user@${{ secrets.EC2_SSH_TARGET }} "cd trackmypet-backend && git pull origin main && rm -rf node_modules && npm ci && npm run build && sudo systemctl restart nest"
