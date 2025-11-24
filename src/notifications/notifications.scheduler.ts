@@ -8,6 +8,7 @@ import { ActivityHistory } from 'src/database/entities/activity-history.entity';
 import { Pet } from 'src/database/entities/pet.entity';
 import { NotificationsService } from './notifications.service';
 import { FirebaseService } from 'src/firebase/firebase.service';
+import { formatInTimeZone } from 'date-fns-tz';
 
 @Injectable()
 export class NotificationsScheduler {
@@ -224,7 +225,6 @@ export class NotificationsScheduler {
           (scheduleTime.getTime() - now.getTime()) / 1000 / 60,
         );
 
-        // Buscar atividades nas próximas 24 horas para criar notificações
         if (minutesDiff >= 0 && minutesDiff <= 1440) {
           this.logger.debug(
             `Schedule ${schedule.id} (${schedule.activity.name}) is pending: scheduled at ${scheduleTime.toLocaleString()}, ${minutesDiff} minutes until activity`,
@@ -276,18 +276,20 @@ export class NotificationsScheduler {
 
     const user = (schedule.activity as ActivityWithUser).user!;
 
-    const scheduleTime = new Date(schedule.time);
-    const timeFormatted = scheduleTime.toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    const saoPauloTz = 'America/Sao_Paulo';
+    const scheduleTimeDate = new Date(schedule.time);
+    const timeFormatted = formatInTimeZone(
+      scheduleTimeDate,
+      saoPauloTz,
+      'HH:mm',
+    );
 
     const petName = schedule.pet?.name || 'seu pet';
     const notification = await this.notificationsService.create({
       userId: user.id,
       title: `⏰ ${schedule.activity.name}`,
       message: `Não esqueça! ${petName} tem "${schedule.activity.name}" agendado para ${timeFormatted}.`,
-      scheduledAt: scheduleTime,
+      scheduledAt: schedule.time,
       activityScheduleId: schedule.id,
     });
 
