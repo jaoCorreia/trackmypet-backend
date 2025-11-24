@@ -1,4 +1,4 @@
-name: Deploy automático TrackMyPet Backend
+name: Deploy TrackMyPet Backend
 
 on:
   push:
@@ -9,22 +9,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Configurar SSH
+      - name: Add SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_actions
-          chmod 600 ~/.ssh/id_actions
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Disable host key checking
+        run: |
           echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 
-      - name: Fazer deploy via SSH
+      - name: Deploy to EC2
         run: |
-          ssh -i ~/.ssh/id_actions ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-          cd ${{ secrets.EC2_PROJECT_PATH }}
-          git pull
-          npm ci
-          npm run build
-          sudo systemctl restart nest
-          EOF
+          ssh ec2-user@ec2-18-230-213-54.sa-east-1.compute.amazonaws.com "
+            cd trackmypet-backend &&
+            git pull origin main &&
+            npm install &&
+            npm run build &&
+            sudo systemctl restart nest
+          "
