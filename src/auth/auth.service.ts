@@ -43,7 +43,7 @@ export class AuthService {
 
     if (!privateKeyPath || !publicKeyPath) {
       throw new Error(
-        'JWT_PRIVATE_KEY_PATH and JWT_PUBLIC_KEY_PATH must be configured in .env. Run: node generate-keys.js',
+        'JWT_PRIVATE_KEY_PATH and JWT_PUBLIC_KEY_PATH must be configured in .env. Run: node scripts/generate-keys.js',
       );
     }
 
@@ -55,7 +55,9 @@ export class AuthService {
       !fs.existsSync(privateKeyFullPath) ||
       !fs.existsSync(publicKeyFullPath)
     ) {
-      throw new Error('Key files not found. Run: node generate-keys.js');
+      throw new Error(
+        'Key files not found. Run: node scripts/generate-keys.js',
+      );
     }
 
     this.privateKey = fs.readFileSync(privateKeyFullPath, 'utf8');

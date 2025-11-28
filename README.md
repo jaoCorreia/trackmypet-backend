@@ -42,7 +42,7 @@ DB_PASS=your_password
 DB_NAME=trackmypet
 
 # AUTHENTICATION
-# Execute: node generate-keys.js
+# Execute: node scripts/generate-keys.js
 # As chaves serão salvas em keys/private.pem e keys/public.pem
 JWT_PRIVATE_KEY_PATH='./keys/private.pem'
 JWT_PUBLIC_KEY_PATH='./keys/public.pem'
@@ -70,10 +70,11 @@ MAIL_FROM_EMAIL=admin@trackmypet.com.br
 O sistema usa autenticação RSA para JWT. Execute o script para gerar as chaves:
 
 ```bash
-node generate-keys.js
+node scripts/generate-keys.js
 ```
 
 Este comando criará:
+
 - `keys/private.pem` - Chave privada para assinar tokens
 - `keys/public.pem` - Chave pública para verificar tokens
 
