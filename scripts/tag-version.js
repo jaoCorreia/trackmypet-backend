@@ -7,7 +7,21 @@ const pkg = JSON.parse(fs.readFileSync(filePath, "utf8"));
 const version = pkg.version;
 const tag = `v${version}`;
 
+function tagExists(tagName) {
+  try {
+    execSync(`git rev-parse ${tagName}`, { stdio: "pipe" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 try {
+  if (tagExists(tag)) {
+    console.log(`⚠️ Tag ${tag} já existe, pulando criação...`);
+    process.exit(0);
+  }
+
   console.log(`🔖 Criando tag ${tag}...`);
 
   execSync(`git add .`);
